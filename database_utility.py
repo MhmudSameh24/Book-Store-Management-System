@@ -81,13 +81,13 @@ class SQLite(DataBase):
                 self.cursor.execute(quary_text)
                 data = self.fixData(self.cursor.fetchall(), self.cursor.description)
             except:
-                return None
+                return []
         else:
             try:
-                self.cursor.execute(quary_text, tuple(args))
+                self.cursor.execute(quary_text, args)
                 data = self.fixData(self.cursor.fetchall(), self.cursor.description)
             except:
-                return None
+                return []
         return data
 
     def execute_query(self, query: str, params: Tuple = ()) -> None:
