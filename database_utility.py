@@ -68,6 +68,28 @@ class SQLite(DataBase):
             raise DatabaseError("Database connection not established")
         return self._cursor
 
+    def fixData(self, db_fetch : list[dict], db_disc : list) -> list[dict]:
+        cols_disc = [col[0] for col in db_disc]
+        rows = [dict(zip(cols_disc, row)) for row in db_fetch]
+        return rows
+    
+    def free_execute(self, quary_text="", *args):
+        # ! do not know what this line do !
+        # con.row_factory = sqlite3.Row
+        if len(tuple(args)) == 0:
+            try:
+                self.cursor.execute(quary_text)
+                data = self.fixData(self.cursor.fetchall(), self.cursor.description)
+            except:
+                return None
+        else:
+            try:
+                self.cursor.execute(quary_text, tuple(args))
+                data = self.fixData(self.cursor.fetchall(), self.cursor.description)
+            except:
+                return None
+        return data
+
     def execute_query(self, query: str, params: Tuple = ()) -> None:
         try:
             self.cursor.execute(query, params)
@@ -101,6 +123,8 @@ class SQLite(DataBase):
             query += f" WHERE {condition}"
         self.execute_query(query, params)
         return self.cursor.fetchall()
+    
+    
 
     def commit(self) -> None:
         if self._connection:
