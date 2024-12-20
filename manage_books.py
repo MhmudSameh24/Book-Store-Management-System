@@ -134,3 +134,7 @@ if __name__ == "__main__":
     for book in books:
         print(book)
 
+    dbobj.open()
+    dbobj.free_execute("DELETE FROM Books")
+    dbobj.commit()
+    dbobj.close()
