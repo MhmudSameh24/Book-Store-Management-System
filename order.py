@@ -1,7 +1,7 @@
 from book import Book
 from database_utility import SQLite
 from manage_books import ManageBook
-from manage_bill import Managebill
+from manage_bill import ManageBill
 
 
 class Order:
@@ -10,7 +10,7 @@ class Order:
         self.books = dict() 
         self.db = db
         self.manage_books = ManageBook(self.db)
-        self.manage_bill = Managebill(self.db)
+        self.manage_bill = ManageBill(self.db)
     
     def add_book(self, book_id : int, quantity : int = 1 ) -> None:
         if book_id not in self.books:
