@@ -19,9 +19,12 @@ class MessageError(Label):
 class Validation:
     Characters = "abcdefghijklmnopqrstuvwxyz"
     Numbers = "0123456789"
+    
 
     correct_username = "admin"
     correct_password = "1234"
+    
+    admins = [(correct_username, correct_password)]
 
     def check_name(self, name):
         name = name.strip().lower()
