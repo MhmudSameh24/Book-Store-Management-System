@@ -8,7 +8,7 @@ from user import User
 red = '#C00000'
 dark_red = '#8B0000'
 green = '#25D366'
-dark_green = '#128C7E'
+dark_green = '#1FAF55'
 light_grey = '#D3D3D3'
 white = '#E5E5E5'
 black = '#252525'
@@ -31,26 +31,26 @@ class ManageUsers:
         form_frame = CTkFrame(self.frame, fg_color="transparent")
         form_frame.pack(pady=10)
 
-        CTkLabel(form_frame, text="Email", font=("Bahnschrift", 12)).grid(row=1, column=0, padx=5, pady=5)
+        CTkLabel(form_frame, text="Email", font=("Bahnschrift", 12)).grid(row=0, column=0, padx=5, pady=5)
         self.email_entry = CTkEntry(form_frame, width=200, font=("Bahnschrift", 12))
-        self.email_entry.grid(row=1, column=1, padx=5, pady=5)
+        self.email_entry.grid(row=0, column=1, padx=5, pady=5)
 
-        CTkButton(form_frame, text="Add User", command=self.add_user,  font=("Bahnschrift", 12)).grid(
+        CTkButton(form_frame, text="Add User", command=self.add_user,  font=("Bahnschrift Bold", 12,)).grid(
             row=0, column=3, pady=10
         )
 
-        CTkButton(form_frame, text="Update User", command=self.update_user, fg_color=green, text_color=black, hover_color=dark_green, font=("Bahnschrift", 12)).grid(
+        CTkButton(form_frame, text="Update User", command=self.update_user, fg_color=green, text_color=black, hover_color=dark_green, font=("Bahnschrift Bold", 12)).grid(
             row=1, column=3, pady=10
         )
-        CTkButton(form_frame, text="Delete User", command=self.delete_user, fg_color=red, text_color=white, hover_color=dark_red, font=("Bahnschrift", 12)).grid(
+        CTkButton(form_frame, text="Delete User", command=self.delete_user, fg_color=red, text_color=white, hover_color=dark_red, font=("Bahnschrift Bold", 12)).grid(
             row=2, column=3, pady=10
         )
-
+        CTkLabel(form_frame, text="Search Email", font=("Bahnschrift", 12)).grid(row=4, column=0, pady=10)
         self.search_txt = CTkEntry(form_frame, width=200, font=("Bahnschrift", 12))
         self.search_txt.grid(row=4, column=1, pady=10)
-        CTkButton(form_frame, text="Search",command=self.search, font=("Bahnschrift", 12),width=18).grid(row=4, column=2, pady=10,padx=10)
+        CTkButton(form_frame, text="Search",command=self.search, font=("Bahnschrift", 12),width=18).grid(row=4, column=2, pady=10,padx=6)
 
-        CTkButton(form_frame, text="Clear", command=self.clear_search,font=("Bahnschrift", 12),width=18).grid(row=4, column=3, pady=10)
+        CTkButton(form_frame, text="Clear", command=self.clear_search,font=("Bahnschrift", 12),width=18).grid(row=4, column=3, padx=1)
 
         self.tree = ttk.Treeview(
             self.frame, columns=("id",  "email"), show="headings"
@@ -137,35 +137,20 @@ class ManageUsers:
         pass
 # -----------------------------------------------------------------------------------------
 
-
-    def is_matching(self, record, search_txt):
-        # search with substring match in name and email (case insensitive)
-        if search_txt.lower() in record[1].lower() or search_txt.lower() in record[2].lower():
-            return True
-        return False
-
     def search(self):
-        search_txt = self.search_txt.get()
-        new_records = []
-        if search_txt:
-            for record in self.tree.get_children():
-                if self.is_matching(self.tree.item(record)["values"], search_txt):
-                    new_records.append(self.tree.item(record)["values"])
-
-            if new_records:
-                self.tree.delete(*self.tree.get_children())
-                for record in new_records:
-                    self.tree.insert("", "end", values=record)
-            else:
-                messagebox.showinfo("Info", "No matching record found")
-                self.clear_search()
+        search_text = self.search_txt.get()
+        if len(search_text):
+            self.tree.delete(*self.tree.get_children())
+            records = ManageUsersDB().search(search_text)
+            for record in records:
+                self.add_to_view((record.get_id(), record.get_email()))
         else:
-            messagebox.showerror("Error", "Please enter a search text")
-            self.show_records()
-
+            messagebox.showerror("Error", "Please enter a search text")        
+          
     def clear_search(self):
         self.search_txt.delete(0, END)
-        self.show_records()
+        self.tree.delete(*self.tree.get_children())
+        self.load_records()
 
     # Todo : get the records from the database and display them in the treeview
     def add_to_view(self, record):
