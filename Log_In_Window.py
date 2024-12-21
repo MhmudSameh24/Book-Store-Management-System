@@ -59,7 +59,7 @@ class LoginPage:
 
         if not self.validation.check_username(
             username
-        ) or not self.validation.check_password(password):
+        ) or not self.validation.check_password(password) or not  self.validation.check_admin(username, password):
             self.error_message.show()
         else:
             self.error_message.hide()
