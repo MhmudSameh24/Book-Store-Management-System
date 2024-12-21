@@ -93,6 +93,7 @@ class ManageUsers:
     def __del__(self):
         self.db.close()
 
+
     def __remove_all_users(self) -> None:
         self.db.free_execute("DELETE FROM Users")
         self.db.commit()
