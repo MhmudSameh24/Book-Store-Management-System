@@ -80,8 +80,6 @@ class ManageUsers:
         return False
 
 
-
-
     def add_user(self):
         name = self.name_entry.get()
         email = self.email_entry.get()
