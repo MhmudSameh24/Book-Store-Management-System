@@ -74,8 +74,6 @@ class SQLite(DataBase):
         return rows
     
     def free_execute(self, quary_text="", *args):
-        # ! do not know what this line do !
-        # con.row_factory = sqlite3.Row
         if len(tuple(args)) == 0:
             try:
                 self.cursor.execute(quary_text)

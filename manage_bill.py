@@ -3,7 +3,7 @@ from book import Book
 from database_utility import SQLite
 from manage_books import ManageBook
 
-class Managebill:
+class ManageBill:
     def __init__(self, db : SQLite):
         self.db = db
         self.manage_books = ManageBook(db)
@@ -84,7 +84,10 @@ class Managebill:
         
         return bill
     
+    def get_user_history(self, user_id : int) -> list[str]:
+        pass
+
 
 if __name__ == "__main__":
     db = SQLite("bookstore.db")
-    object_of_manage_bill = Managebill(db)
+    object_of_manage_bill = ManageBill(db)
