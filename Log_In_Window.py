@@ -31,7 +31,9 @@ class LoginPage:
 
         lab3 = tkinter.CTkLabel(self.frame, text="Password:", font=("Arial", 15))
         lab3.grid(row=2, column=0, sticky="E", padx=10, pady=10)
-        self.password_entry = tkinter.CTkEntry(self.frame, show="*", width=200, corner_radius=10)
+        self.password_entry = tkinter.CTkEntry(
+            self.frame, show="●", width=200, corner_radius=10
+        )
         self.password_entry.grid(row=2, column=1, padx=10, pady=10, sticky="we")
         self.password_entry.configure(font=("Arial", 15))
 
@@ -49,7 +51,7 @@ class LoginPage:
             fg_color="#4CAF50",
             hover_color="#45a049",
             font=("Arial", 15, "bold"),
-            corner_radius=10
+            corner_radius=10,
         )
         login_button.grid(row=3, column=0, columnspan=2, pady=15)
 
@@ -57,9 +59,11 @@ class LoginPage:
         username = self.username_entry.get()
         password = self.password_entry.get()
 
-        if not self.validation.check_username(
-            username
-        ) or not self.validation.check_password(password) or not  self.validation.check_admin(username, password):
+        if (
+            not self.validation.check_username(username)
+            or not self.validation.check_password(password)
+            or not self.validation.check_admin(username, password)
+        ):
             self.error_message.show()
         else:
             self.error_message.hide()
@@ -73,6 +77,6 @@ class LoginPage:
 if __name__ == "__main__":
     root = tkinter.CTk()
     login_page = LoginPage(root)
-    tkinter.set_appearance_mode("light")  
+    tkinter.set_appearance_mode("light")
 
     root.mainloop()

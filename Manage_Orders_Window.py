@@ -22,21 +22,42 @@ class ManageOrders:
         form_frame = Frame(self.frame)
         form_frame.pack(pady=10)
 
-        Label(form_frame, text="Book ID").grid(row=0, column=0, padx=5, pady=5)
-        self.book_id_entry = Entry(form_frame)
-        self.book_id_entry.grid(row=0, column=1, padx=5, pady=5)
+        lab2 = Label(form_frame, text="Buyer's Email").grid(
+            row=1, column=0, padx=5, pady=5
+        )
+        self.emial_entry = Entry(form_frame)
+        self.emial_entry.grid(row=1, column=1, padx=5, pady=5)
 
-        Label(form_frame, text="User ID").grid(row=1, column=0, padx=5, pady=5)
-        self.user_id_entry = Entry(form_frame)
-        self.user_id_entry.grid(row=1, column=1, padx=5, pady=5)
-
-        Label(form_frame, text="Quantity").grid(row=2, column=0, padx=5, pady=5)
-        self.quantity_entry = Entry(form_frame)
+        lab3 = Label(form_frame, text="Quantity").grid(row=2, column=0, padx=5, pady=5)
+        self.quantity_entry = Spinbox(
+            form_frame,
+            from_=1,
+            to=100,
+            increment=1,
+            width=10,
+        )
         self.quantity_entry.grid(row=2, column=1, padx=5, pady=5)
 
-        Button(form_frame, text="Add Order", command=self.add_order, bg="gray").grid(
-            row=3, column=0, pady=10
+        btn1 = Button(form_frame, text="Add To Cart", command=self.add_order, bg="gray")
+        btn1.grid(row=3, column=0, pady=10)
+
+        btn2 = Button(
+            form_frame, text="Add Remove To Cart", command=self.add_order, bg="gray"
         )
+        btn2.grid(row=3, column=1, pady=10)
+
+        btn3 = Button(form_frame, text="Clear cart", command=self.add_order, bg="gray")
+        btn3.grid(row=3, column=2, pady=10)
+
+        btn4 = Button(form_frame, text="Git Bill", command=self.add_order, bg="gray")
+        btn4.grid(row=3, column=3, pady=10)
+
+        # --------------------------------------------------
+        # TODO: Implement output bill functionality
+
+        # --------------------------------------
+
+        # -------------------Orders Table-------------------
 
         self.tree = ttk.Treeview(
             self.frame,
@@ -48,9 +69,20 @@ class ManageOrders:
         self.tree.heading("user_id", text="User ID")
         self.tree.heading("quantity", text="Quantity")
         self.tree.pack(pady=10)
-
+        # -------------------Books Table-------------------
+        self.books_tree = ttk.Treeview(
+            self.frame,
+            columns=("book_id", "title", "author", "price"),
+            show="headings",
+        )
+        self.books_tree.heading("book_id", text="Book ID")
+        self.books_tree.heading("title", text="Title")
+        self.books_tree.heading("author", text="Author")
+        self.books_tree.heading("price", text="Price")
+        self.books_tree.pack(pady=10)
         self.load_orders()
-
+     
+     
     def load_orders(self):
         for row in self.tree.get_children():
             self.tree.delete(row)
