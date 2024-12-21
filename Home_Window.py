@@ -79,7 +79,13 @@ class BookstoreApp:
         self.manage_orders.display()
 
     def show_home(self):
-        self.manage_books.hide()
+        if hasattr(self, "manage_books"):
+            self.manage_books.hide()
+        if hasattr(self, "manage_users"):
+            self.manage_users.hide()
+        if hasattr(self, "manage_orders"):
+            self.manage_orders.hide()
+
         self.home_frame.pack(fill=BOTH, expand=True)
 
 
