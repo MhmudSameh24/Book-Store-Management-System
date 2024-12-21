@@ -58,18 +58,6 @@ class ManageOrders:
         # --------------------------------------
 
         # -------------------Orders Table-------------------
-
-        self.tree = ttk.Treeview(
-            self.frame,
-            columns=("id", "book_id", "user_id", "quantity"),
-            show="headings",
-        )
-        self.tree.heading("id", text="ID")
-        self.tree.heading("book_id", text="Book ID")
-        self.tree.heading("user_id", text="User ID")
-        self.tree.heading("quantity", text="Quantity")
-        self.tree.pack(pady=10)
-        # -------------------Books Table-------------------
         self.books_tree = ttk.Treeview(
             self.frame,
             columns=("book_id", "title", "author", "price"),
@@ -80,7 +68,19 @@ class ManageOrders:
         self.books_tree.heading("author", text="Author")
         self.books_tree.heading("price", text="Price")
         self.books_tree.pack(pady=10)
-        self.load_orders()
+        self.books_tree.pack(pady=10)
+
+        # -------------------Books Table-------------------
+        self.tree = ttk.Treeview(
+            self.frame,
+            columns=("id", "book_id", "user_id", "quantity"),
+            show="headings",
+        )
+        self.tree.heading("id", text="ID")
+        self.tree.heading("book_id", text="Book ID")
+        self.tree.heading("user_id", text="User ID")
+        self.tree.heading("quantity", text="Quantity")
+        self.tree.pack(pady=10)
      
      
     def load_orders(self):
