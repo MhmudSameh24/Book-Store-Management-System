@@ -111,6 +111,7 @@ class ManageBooks:
         self.tree.heading("price", text="Price")
         self.tree.heading("quantity", text="Quantity")
         self.tree.grid(row = 1, column = 1)
+        self.tree.bind("<ButtonRelease-1>", self.on_item_click)
         self.load_books()
 
 
@@ -143,9 +144,10 @@ class ManageBooks:
         book.set_price(price)
         book.set_quantity(quantity)
 
-        if title and author and self.valid.check_number(price) and self.valid.check_number(quantity):
+        if title and author and price and self.valid.check_number(quantity):
             self.manage_books.add_book(book)
             self.load_books()
+            self.reset_form()
             messagebox.showinfo("Success", "Book added successfully")
         else:
             if title and author and price and quantity:
@@ -166,7 +168,7 @@ class ManageBooks:
             price = self.price_entry.get()
             quantity = self.quantity_entry.get()
 
-            if title and author and self.valid.check_number(price) and self.valid.check_number(quantity):
+            if title and author and price and self.valid.check_number(quantity):
                 book = self.manage_books.get_book(book_id)
                 book.set_title(title)
                 book.set_author(author)
@@ -175,6 +177,7 @@ class ManageBooks:
 
                 self.manage_books.update_book(book)
                 self.load_books()
+                self.reset_form()
                 messagebox.showinfo("Success", "Book updated successfully")
             else:
                 messagebox.showerror("Error", "All fields are required")
@@ -184,6 +187,7 @@ class ManageBooks:
     def delete_book(self):
         selected_item = self.tree.selection()
         if selected_item:
+            self.reset_form()
             item = self.tree.item(selected_item)
             book_id = item["values"][0]
             self.manage_books.remove_book(book_id)
@@ -206,8 +210,6 @@ class ManageBooks:
                                                   row.get_author(),
                                                   row.get_price(),
                                                   row.get_quantity()))
-        # else:
-
 
     def delete_results(self):
         self.load_books()
@@ -215,6 +217,28 @@ class ManageBooks:
     def reset_table(self):
         for item in self.tree.get_children():
             self.tree.delete(item)
+
+    def reset_form(self):
+        self.title_entry.delete(0, END)
+        self.author_entry.delete(0, END)
+        self.price_entry.delete(0, END)
+        self.quantity_entry.delete(0, END)
+
+    def on_item_click(self, event):
+
+        # Get the selected item
+        selected_item = self.tree.selection() # Get the focused item
+        if selected_item:
+            self.reset_form()
+            item_data = self.tree.item(selected_item)
+            print(item_data['values'])
+            self.title_entry.insert(0, item_data['values'][1])
+            self.author_entry.insert(0, item_data['values'][2])
+            self.price_entry.insert(0, item_data['values'][3])
+            self.quantity_entry.insert(0, item_data['values'][4])
+
+            print("Item Data:", item_data)  # Print the data
+            print("Values:", item_data['values'])  # Print the values (columns)
 
     def display(self):
         self.frame.pack(fill=BOTH, expand=True)
