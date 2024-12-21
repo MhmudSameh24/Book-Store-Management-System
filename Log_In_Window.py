@@ -1,4 +1,5 @@
 from tkinter import *
+import customtkinter as tkinter
 from Validation import Validation, MessageError
 from Home_Window import BookstoreApp
 
@@ -10,8 +11,8 @@ class LoginPage:
         self.root.title("Login Page")
         self.validation = Validation()
 
-        self.frame = Frame(root, padx=20, pady=20)
-        self.frame.pack()
+        self.frame = tkinter.CTkFrame(root, corner_radius=15)
+        self.frame.pack(padx=20, pady=20)
         self.frame.grid_rowconfigure(0, weight=3)
         self.frame.grid_rowconfigure(1, weight=1)
         self.frame.grid_rowconfigure(2, weight=1)
@@ -19,35 +20,36 @@ class LoginPage:
         self.frame.grid_columnconfigure(0, weight=2)
         self.frame.grid_columnconfigure(1, weight=1)
 
-        lab1 = Label(self.frame, text="Login", font=("Arial", 50))
+        lab1 = tkinter.CTkLabel(self.frame, text="Login", font=("Arial", 50, "bold"))
         lab1.grid(row=0, column=0, columnspan=5, padx=10, pady=50, sticky="we")
 
-        lab2 = Label(self.frame, text="Username:", font=("Arial", 15))
-        lab2.grid(row=1, column=0, sticky="E")
-        self.username_entry = Entry(self.frame, width="30")
+        lab2 = tkinter.CTkLabel(self.frame, text="Username:", font=("Arial", 15))
+        lab2.grid(row=1, column=0, sticky="E", padx=10, pady=10)
+        self.username_entry = tkinter.CTkEntry(self.frame, width=200, corner_radius=10)
         self.username_entry.grid(row=1, column=1, padx=10, pady=10, sticky="we")
-        self.username_entry.config(font=("Arial", 15))
-        
-        lab3 = Label(self.frame, text="Password:", font=("Arial", 15))
-        lab3.grid(row=2, column=0, sticky=E)
-        self.password_entry = Entry(self.frame, show="*",width="30")
+        self.username_entry.configure(font=("Arial", 15))
+
+        lab3 = tkinter.CTkLabel(self.frame, text="Password:", font=("Arial", 15))
+        lab3.grid(row=2, column=0, sticky="E", padx=10, pady=10)
+        self.password_entry = tkinter.CTkEntry(self.frame, show="*", width=200, corner_radius=10)
         self.password_entry.grid(row=2, column=1, padx=10, pady=10, sticky="we")
-        self.password_entry.config(font=("Arial", 15))
-       
+        self.password_entry.configure(font=("Arial", 15))
 
         self.error_message = MessageError(
-            self.frame, text="Invalid username or password"
+            self.frame, text="Invalid username or password", fg="red"
         )
         self.error_message.hide()
 
-        login_button = Button(
+        login_button = tkinter.CTkButton(
             self.frame,
             text="Login",
             command=self.login,
-            width="20",
-            height="2",
-            bg="gray",
-            font=("Arial", 15),
+            width=200,
+            height=40,
+            fg_color="#4CAF50",
+            hover_color="#45a049",
+            font=("Arial", 15, "bold"),
+            corner_radius=10
         )
         login_button.grid(row=3, column=0, columnspan=2, pady=15)
 
@@ -69,7 +71,8 @@ class LoginPage:
 
 
 if __name__ == "__main__":
-    root = Tk()
+    root = tkinter.CTk()
     login_page = LoginPage(root)
+    tkinter.set_appearance_mode("light")  
 
     root.mainloop()
