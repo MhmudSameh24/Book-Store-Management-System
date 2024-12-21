@@ -57,6 +57,7 @@ class ManageBill:
                                  last_bill_id
                                  )
 
+        self.db.commit()
         self.db.close()
 
 
