@@ -11,6 +11,8 @@ class BookstoreApp:
         self.root = root
         self.root.title("Bookstore Management System")
         self.root.geometry("800x500")
+        icon = PhotoImage(file="Icon.png")
+        self.root.iconphoto(False, icon)
         self.create_main_ui()
         self.home_frame.grid_rowconfigure(0, weight=3)
         self.home_frame.grid_rowconfigure(1, weight=1)

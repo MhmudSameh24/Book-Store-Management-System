@@ -9,7 +9,8 @@ class LoginPage:
         self.root.geometry("800x600")
         self.root.title("Login Page")
         self.validation = Validation()
-
+        icon = PhotoImage(file="Icon.png")
+        self.root.iconphoto(False, icon)
         self.frame = Frame(root, bd=2, relief="groove")
         self.frame.pack(padx=20, pady=20)
         self.frame.grid_rowconfigure(0, weight=3)
