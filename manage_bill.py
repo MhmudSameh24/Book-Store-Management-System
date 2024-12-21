@@ -84,6 +84,9 @@ class Managebill:
         
         return bill
     
+    def get_user_history(self, user_id : int) -> list[str]:
+        pass
+
 
 if __name__ == "__main__":
     db = SQLite("bookstore.db")
