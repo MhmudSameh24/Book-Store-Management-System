@@ -1,5 +1,4 @@
 from tkinter import *
-import customtkinter as tkinter
 from Validation import Validation
 from tkinter import ttk, messagebox
 from Mange_Book_Window import ManageBooks
@@ -24,44 +23,50 @@ class BookstoreApp:
     def create_main_ui(self):
         self.home_frame = Frame(self.root)
 
-        lab1 = tkinter.CTkLabel(
+        lab1 = Label(
             self.home_frame,
             text="Bookstore Management System",
             font=("Arial", 35),
-            text_color="#2c3e50",
+            fg="#2c3e50",
         )
         lab1.grid(row=0, column=0, columnspan=5, padx=10, pady=10, sticky="we")
 
-        btn1 = tkinter.CTkButton(
+        btn1 = Button(
             self.home_frame,
             text="Manage Books",
             command=self.open_manage_books,
-            width=350,
-            height=50,
-            bg_color="#3498db",
+            width=35,
+            height=2,
+            bg="#3498db",
             font=("Arial", 20),
+            activebackground="#2980b9",
+            activeforeground="#ffffff",
         )
         btn1.grid(row=1, column=0, columnspan=5, padx=10, pady=10)
 
-        btn2 = tkinter.CTkButton(
+        btn2 = Button(
             self.home_frame,
             text="Manage Users",
             command=self.open_manage_users,
-            width=350,
-            height=50,
-            bg_color="#3498db",
+            width=35,
+            height=2,
+            bg="#3498db",
             font=("Arial", 20),
+            activebackground="#2980b9",
+            activeforeground="#ffffff",
         )
         btn2.grid(row=2, column=0, columnspan=5, padx=10, pady=10)
 
-        btn3 = tkinter.CTkButton(
+        btn3 = Button(
             self.home_frame,
             text="Manage Orders",
             command=self.open_manage_orders,
-            width=350,
-            height=50,
-            bg_color="#3498db",
+            width=35,
+            height=2,
+            bg="#3498db",
             font=("Arial", 20),
+            activebackground="#2980b9",
+            activeforeground="#ffffff",
         )
         btn3.grid(row=3, column=0, columnspan=5, padx=10, pady=10)
 
