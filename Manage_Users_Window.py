@@ -1,8 +1,8 @@
-from tkinter import *
-from tkinter import ttk, messagebox
-from customtkinter import *
 import re
 import random
+from tkinter import *
+from customtkinter import *
+from tkinter import ttk, messagebox
 
 red = '#C00000'
 dark_red = '#8B0000'

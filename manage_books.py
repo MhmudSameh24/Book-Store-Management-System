@@ -2,7 +2,7 @@ from book import Book
 from database_utility import SQLite
 
 
-class ManageBooks:
+class ManageBook:
     def __init__(self, db: SQLite):
         self.db = db
 
@@ -88,7 +88,7 @@ class ManageBooks:
 # test manage_books.py
 if __name__ == "__main__":
     dbobj = SQLite("bookstore.db")
-    manage_books = ManageBooks(dbobj)
+    manage_books = ManageBook(dbobj)
 
     # Add a book
     book1 = Book()
