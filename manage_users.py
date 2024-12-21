@@ -21,7 +21,7 @@ class ManageUsers:
         
 
     def update_user(self, User: us.User) -> bool:
-        if self.get_user_by_email(User.get_email()).get_id() != User.get_id():
+        if self.get_user_by_email(User.get_email()).get_id() != User.get_id() and self.user_exists(User.get_email()):
             return False
         self.db.update(
             self.user_table,
