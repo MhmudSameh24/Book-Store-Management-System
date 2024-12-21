@@ -76,17 +76,17 @@ class ManageUsers:
             font=("Bahnschrift Bold", 12),
         ).grid(row=2, column=3, pady=10)
         Label(form_frame, text="Search Email", font=("Bahnschrift", 12)).grid(
-            row=4, column=0, pady=10
+            row=6, column=0, pady=10
         )
         self.search_txt = Entry(form_frame, width=30, font=("Bahnschrift", 12))
-        self.search_txt.grid(row=4, column=1, pady=10)
+        self.search_txt.grid(row=6, column=1, pady=10)
         Button(
             form_frame,
             text="Search",
             command=self.search,
             font=("Bahnschrift", 12),
             width=10,
-        ).grid(row=4, column=2, pady=10, padx=6)
+        ).grid(row=6, column=2, pady=10, padx=6)
 
         Button(
             form_frame,
@@ -98,7 +98,7 @@ class ManageUsers:
             fg=white,
             activebackground=dark_blue,
             activeforeground=white,
-        ).grid(row=4, column=3, padx=1)
+        ).grid(row=6, column=3, padx=1)
 
         self.tree = ttk.Treeview(self.frame, columns=("id", "email"), show="headings")
         self.tree.heading("id", text="ID")

@@ -18,10 +18,11 @@ class ManageUsers:
     def remove_user(self, user_id: int) -> None:
         self.db.delete(self.user_table, "user_id = ?", (user_id,))
         self.db.commit()
-        
 
     def update_user(self, User: us.User) -> bool:
-        if self.get_user_by_email(User.get_email()).get_id() != User.get_id() and self.user_exists(User.get_email()):
+        if self.get_user_by_email(
+            User.get_email()
+        ).get_id() != User.get_id() and self.user_exists(User.get_email()):
             return False
         self.db.update(
             self.user_table,
@@ -88,6 +89,10 @@ class ManageUsers:
             user = self.convert_data_to_user(row)
             users.append(user)
         return users
+
+    def __del__(self):
+        self.db.close()
+
 
     def __remove_all_users(self) -> None:
         self.db.free_execute("DELETE FROM Users")

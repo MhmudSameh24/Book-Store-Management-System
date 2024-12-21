@@ -43,7 +43,13 @@ class Validation:
 
     def check_password(self, password):
         return password.strip() != ""
-
+    
+    def check_admin(self, username, password):
+        for username_, password_ in Validation.admins:
+            if username_ == username and password_ == password:
+                return True;
+        
+        return False;
 
 class App(Tk):
     def __init__(self):
