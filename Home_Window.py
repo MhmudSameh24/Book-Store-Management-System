@@ -24,7 +24,7 @@ class BookstoreApp:
         self.home_frame = Frame(self.root)
 
         lab1 = Label(
-            self.home_frame, text="Bookstore Management System", font=("Arial", 35)
+            self.home_frame, text="Bookstore Management System", font=("Bahnschrift", 35)
         )
         lab1.grid(row=0, column=0, columnspan=5, padx=10, pady=10, sticky="we")
 
@@ -35,7 +35,7 @@ class BookstoreApp:
             width=35,
             pady=10,
             bg="gray",
-            font=("Arial", 15),
+            font=("Bahnschrift", 15),
         )
         btn1.grid(row=1, column=0, columnspan=5, padx=10, pady=10)
 
@@ -46,7 +46,7 @@ class BookstoreApp:
             width=35,
             pady=10,
             bg="gray",
-            font=("Arial", 15),
+            font=("Bahnschrift", 15),
         )
         btn2.grid(row=2, column=0, columnspan=5, padx=10, pady=10)
 
@@ -57,7 +57,7 @@ class BookstoreApp:
             width=35,
             pady=10,
             bg="gray",
-            font=("Arial", 15),
+            font=("Bahnschrift", 15),
         )
         btn3.grid(row=3, column=0, columnspan=5, padx=10, pady=10)
 
