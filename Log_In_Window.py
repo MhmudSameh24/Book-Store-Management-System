@@ -1,7 +1,7 @@
 from tkinter import *
 import customtkinter as tkinter
-from Validation import Validation, MessageError
 from Home_Window import BookstoreApp
+from Validation import Validation, MessageError
 
 
 class LoginPage:
