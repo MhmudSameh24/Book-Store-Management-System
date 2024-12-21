@@ -2,7 +2,8 @@ from tkinter import *
 from tkinter import ttk, messagebox
 from customtkinter import *
 import re
-import random
+from manage_users import ManageUsers as ManageUsersDB
+from user import User
 
 red = '#C00000'
 dark_red = '#8B0000'
@@ -19,7 +20,6 @@ class ManageUsers:
         self.create_ui()
 
     def create_ui(self):
-        self.records = {}
         lab1 = CTkLabel(self.frame, text="Users Management", font=("Bahnschrift", 16))
         lab1.pack(pady=10)
 
@@ -30,10 +30,6 @@ class ManageUsers:
 
         form_frame = CTkFrame(self.frame, fg_color="transparent")
         form_frame.pack(pady=10)
-
-        CTkLabel(form_frame, text="Name", font=("Bahnschrift", 12)).grid(row=0, column=0, padx=5, pady=5)
-        self.name_entry = CTkEntry(form_frame, width=200, font=("Bahnschrift", 12))
-        self.name_entry.grid(row=0, column=1, padx=5, pady=5)
 
         CTkLabel(form_frame, text="Email", font=("Bahnschrift", 12)).grid(row=1, column=0, padx=5, pady=5)
         self.email_entry = CTkEntry(form_frame, width=200, font=("Bahnschrift", 12))
@@ -57,13 +53,12 @@ class ManageUsers:
         CTkButton(form_frame, text="Clear", command=self.clear_search,font=("Bahnschrift", 12),width=18).grid(row=4, column=3, pady=10)
 
         self.tree = ttk.Treeview(
-            self.frame, columns=("id", "name", "email"), show="headings"
+            self.frame, columns=("id",  "email"), show="headings"
         )
         self.tree.heading("id", text="ID")
-        self.tree.heading("name", text="Name")
         self.tree.heading("email", text="Email")
         self.load_records()
-        self.show_records()
+        # self.show_records()
         self.tree.pack(pady=10)
 
 
@@ -72,57 +67,49 @@ class ManageUsers:
         if re.search(regex, email):
             return True
         return False
-
-    def validate_name(self, name):
-        regex = "^[a-zA-Z ]+$"
-        if re.search(regex, name):
-            return True
-        return False
-
-
+ 
     def add_user(self):
-        name = self.name_entry.get()
         email = self.email_entry.get()
-
-        if name and email:
-            if self.validate_name(name) == False or self.validate_email(email) == False:
-                messagebox.showerror("Error", "Invalid name or email")
-            else:
+        if len(email) and self.validate_email(email):
+            state = self.add_record(email)
+            if state:
                 messagebox.showinfo("Success", "User added successfully")
-                record = (random.randint(1, 1000), name, email)
-                self.add_record(record)
-                self.add_to_view(record)
+                added_user = ManageUsersDB().get_user_by_email(email)
+                self.add_to_view((added_user.get_id(), added_user.get_email()))
+            else:
+                messagebox.showerror("Error", "User already exists")
         else:
-            messagebox.showerror("Error", "All fields are required")
+            messagebox.showerror("Error", "Please enter a valid email")
+            
 
     def delete_user(self):
         selected = self.tree.selection()
         if selected:
-            id, name, email = self.tree.item(selected)["values"]
-            self.delete_record((id, name, email))
-            messagebox.showinfo("Success", "User deleted successfully")
+            id = self.tree.item(selected)["values"][0]
+            self.delete_record(int(id))
             self.tree.delete(selected)
+            messagebox.showinfo("Success", "User deleted successfully")
         else:
-            messagebox.showerror("Error", "Please select a record to delete")
+            messagebox.showerror("Error", "User not found")
     
     def update_user(self):
         selected = self.tree.selection()
         if selected:
-            if len(self.name_entry.get()) == 0 or len(self.email_entry.get()) == 0:
-                messagebox.showerror("Error", "All fields are required")
-            else:
-                if self.validate_name(self.name_entry.get()) == False or self.validate_email(self.email_entry.get()) == False:
-                    messagebox.showerror("Error", "Invalid name or email")
-                else:
-                    id, name, email = self.tree.item(selected)["values"]
-                    self.update_record((id, name, email), (id, self.name_entry.get(), self.email_entry.get()))
-                    name = self.name_entry.get()
-                    email = self.email_entry.get()
+            new_email = self.email_entry.get()
+            if len(new_email) and self.validate_email(new_email):
+                updated_user = User()
+                updated_user.set_id(self.tree.item(selected)["values"][0])
+                updated_user.set_email(new_email)
+                state = self.update_record(updated_user)
+                if state:
+                    self.tree.item(selected, values=(updated_user.get_id(), updated_user.get_email()))
                     messagebox.showinfo("Success", "User updated successfully")
-                    self.tree.item(selected, values=(id, name, email))
+                else:
+                    messagebox.showerror("Error", "User already exists")
+            else:
+                messagebox.showerror("Error", "Please enter a valid email")
         else:
-            messagebox.showerror("Error", "Please select a record to update")
-    
+            messagebox.showerror("Error", "User not found")    
 
     def display(self):
         self.frame.pack(fill=BOTH, expand=True)
@@ -135,20 +122,18 @@ class ManageUsers:
         self.show_home()
 
  # --------------------------------- Database Operations ---------------------------------
-    def add_record(self, record):
+    def add_record(self, new_email):
         # todo: add the record to the database
-        self.records.add(record)
-        pass
+        state = ManageUsersDB().add_user(new_email)
+        return state
 
-    def delete_record(self, record):
-        # todo: delete the record from the database
-        self.records.remove(record)
-        pass
-
-    def update_record(self,old_record, new_record):
+    def delete_record(self, id):
+        ManageUsersDB().remove_user(id)
+    
+    def update_record(self,updated_user):
         # todo: update the record in the database
-        self.records.remove(old_record)
-        self.records.add(new_record)        
+        state = ManageUsersDB().update_user(updated_user)
+        return state   
         pass
 # -----------------------------------------------------------------------------------------
 
@@ -188,15 +173,11 @@ class ManageUsers:
        
     
     def load_records(self):
-        # some query to get the records
-        self.records = {(1, "John Doe", ""), (2, "Jane Doe", ""), (3, "Alice", ""), (4, "Bob", ""), (5, "Charlie", "")}
-        for record in self.records:
-            self.add_record(record)
-
-    def show_records(self):
-        self.tree.delete(*self.tree.get_children())
-        for record in self.records:
-            self.add_to_view(record)
+        records = ManageUsersDB().load_all_users()
+        for record in records:
+            self.add_to_view((record.get_id(), record.get_email()))
+        
+       
 
 if __name__ == "__main__":
     root = CTk()
