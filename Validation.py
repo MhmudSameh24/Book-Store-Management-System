@@ -1,73 +1,83 @@
 from tkinter import *
 
-def next(c):
-    return chr(ord(c) + 1)
 
-def prev(c):
-    return chr(ord(c) - 1)
-
-class MessageError:
-    def __init__(self, parent, text = 'Something Wrong Here', color = 'red'):
-        self.text = text
-        self.frame = Frame(parent)
-        self.label = Label(self.frame, text = text, fg = color);
-        self.frame.pack()
-
-    def hide(self):
-        self.label.pack_forget()
-        self.frame.config(height=0, width=0)
-        self.label.config(text = "", height=0, width=0)
+class MessageError(Label):
+    def __init__(self, parent, **kwargs):
+        super().__init__(parent, **kwargs)
+        self.grid(row=4, column=0, columnspan=2, pady=5)
+        self["fg"] = "red"
+        self["font"] = ("Arial", 10, "bold")
+        self.hide()
 
     def show(self):
-        self.label.pack()
-        self.label.config(text = self.text)
+        self.grid()
 
-    def toggle(self):
-        manager = self.label.winfo_manager()
-        if manager == "pack":
-            self.hide()
-        else:
-            self.show()
+    def hide(self):
+        self.grid_remove()
+
 
 class Validation:
     Characters = "abcdefghijklmnopqrstuvwxyz"
     Numbers = "0123456789"
 
+    correct_username = "admin"
+    correct_password = "1234"
+
     def check_name(self, name):
-        name = name.strip()
-        name = name.lower()
-
-        for let in name:
-            if not let in Validation.Characters:
-                return False
-
-        return name != ""
+        name = name.strip().lower()
+        return all(let in Validation.Characters for let in name) and name != ""
 
     def check_number(self, number):
         number = number.strip()
-
-        for let in number:
-            if not let in Validation.Numbers:
-                return False
-
-        return number != ""
+        return all(let in Validation.Numbers for let in number) and number != ""
 
     def check_username(self, username):
-        username = username.strip()
-        username = username.lower()
-
-        for let in username:
-            if not let in Validation.Numbers and not let in Validation.Characters:
-                return False
-
-        return username != ""
+        username = username.strip().lower()
+        return (
+            all(let in Validation.Characters + Validation.Numbers for let in username)
+            and username != ""
+        )
 
     def check_password(self, password):
-        password = password.strip()
-        return password != ""
+        return password.strip() != ""
+
+
+class App(Tk):
+    def __init__(self):
+        super().__init__()
+        self.title("Validation Example")
+        self.geometry("400x200")
+
+        self.validation = Validation()
+
+        # Widgets
+        Label(self, text="Username:").grid(row=0, column=0, padx=10, pady=5)
+        self.username_entry = Entry(self)
+        self.username_entry.grid(row=0, column=1, padx=10, pady=5)
+
+        Label(self, text="Password:").grid(row=1, column=0, padx=10, pady=5)
+        self.password_entry = Entry(self, show="*")
+        self.password_entry.grid(row=1, column=1, padx=10, pady=5)
+
+        self.error_message = MessageError(self, text="Invalid username or password!")
+
+        Button(self, text="Log In", command=self.validate_inputs).grid(
+            row=2, column=0, columnspan=2, pady=10
+        )
+
+    def validate_inputs(self):
+        username = self.username_entry.get()
+        password = self.password_entry.get()
+
+        if not self.validation.check_username(
+            username
+        ) or not self.validation.check_password(password):
+            self.error_message.show()
+        else:
+            self.error_message.hide()
+            print("Login Successful!")  # يمكن استدعاء الصفحة الرئيسية هنا
+
 
 if __name__ == "__main__":
-    valid = Validation()
-
-    print(valid.check_name("moahdemd"))
-    print(valid.check_number("1233"))
+    app = App()
+    app.mainloop()
