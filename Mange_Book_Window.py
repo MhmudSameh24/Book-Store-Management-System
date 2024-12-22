@@ -189,6 +189,8 @@ class ManageBooks:
         self.tree.heading("price", text="Price")
         self.tree.heading("quantity", text="Quantity")
         self.tree.grid(row=1, column=1)
+        self.tree.bind("<ButtonRelease-1>", self.on_item_click)
+
         self.load_books()
 
     def load_books(self):
