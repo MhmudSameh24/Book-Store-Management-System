@@ -4,6 +4,15 @@ from manage_books import *
 from Validation import Validation
 from tkinter import ttk, messagebox
 
+red = '#C00000'
+dark_red = '#8B0000'
+green = '#25D366'
+dark_green = '#128C7E'
+light_grey = '#D3D3D3'
+white = '#252525'
+black = '#E5E5E5'
+yellow = "#ffe400"
+
 class ManageBooks:
     def __init__(self, master, show_home):
         # self.dbobj = SQLite("bookstore.db")
@@ -17,103 +26,108 @@ class ManageBooks:
 
 
     def create_ui(self):
-        #***************************** books data entry (add book, update book, delete book) ***************************
-        books_data = Frame(self.frame)
-        books_data.grid(row = 0, column = 0, rowspan = 2, padx = 50, sticky="nesw")
+        # ***************************** books data entry (add book, update book, delete book) ***************************
+        books_data = Frame(self.frame, bg=black)
+        books_data.grid(row=0, column=0, rowspan=2, padx=50, sticky="nesw")
 
         # Title 1
-        title_frame = Frame(books_data)
-        title_frame.grid(row = 0, column = 0, sticky="nesw")
+        title_frame = Frame(books_data, bg=black)
+        title_frame.grid(row=0, column=0, sticky="nesw", pady=20, padx=20)
 
-        lab1 = Label(books_data, text="Books Management", font=("Arial", 16))
-        lab1.grid(pady=10, row = 0, column = 0, sticky="nesw")
+        lab1 = Label(books_data, text="Books Management", fg=white, font=("Arial", 20), bg=black)
+        lab1.grid(pady=10, row=0, column=0, sticky="nesw")
         # -------------------------------------------------------------------
 
         # Input Books 2
-        form_frame = Frame(books_data)
-        form_frame.grid(pady=10, row = 1, column = 0, sticky="nesw")
+        form_frame = Frame(books_data, bg=black)
+        form_frame.grid(row=1, column=0)
 
-        Label(form_frame, text="Title").grid(row=0, column=0, padx=5, pady=5)
-        self.title_entry = Entry(form_frame)
+        Label(form_frame, text="Title", font=("Arial", 10), bg=black, fg=white).grid(row=0, column=0, padx=5, pady=5,
+                                                                                     sticky='nesw')
+        self.title_entry = Entry(form_frame, font=("Arial", 10))
         self.title_entry.grid(row=0, column=1, padx=5, pady=5, sticky="nesw")
 
-        Label(form_frame, text="Author").grid(row=1, column=0, padx=5, pady=5)
-        self.author_entry = Entry(form_frame)
+        Label(form_frame, text="Author", font=("Arial", 10), bg=black, fg=white).grid(row=1, column=0, padx=5, pady=5,
+                                                                                      sticky='nesw')
+        self.author_entry = Entry(form_frame, font=("Arial", 10))
         self.author_entry.grid(row=1, column=1, padx=5, pady=5, sticky="nesw")
 
-        Label(form_frame, text="Price").grid(row=2, column=0, padx=5, pady=5)
-        self.price_entry = Entry(form_frame)
+        Label(form_frame, text="Price", font=("Arial", 10), bg=black, fg=white).grid(row=2, column=0, padx=5, pady=5,
+                                                                                     sticky='nesw')
+        self.price_entry = Entry(form_frame, font=("Arial", 10))
         self.price_entry.grid(row=2, column=1, padx=5, pady=5, sticky="nesw")
 
-        Label(form_frame, text="Quantity").grid(row=3, column=0, padx=5, pady=5)
-        self.quantity_entry = Entry(form_frame)
+        Label(form_frame, text="Quantity", font=("Arial", 10), bg=black, fg=white).grid(row=3, column=0, padx=5, pady=5,
+                                                                                        sticky='nesw')
+        self.quantity_entry = Entry(form_frame, font=("Arial", 10))
         self.quantity_entry.grid(row=3, column=1, padx=5, pady=5, sticky="nesw")
         # -------------------------------------------------------------------
 
         # Button books 3
-        buttons_frame = Frame(books_data)
-        buttons_frame.grid(row = 2, column = 0, pady=10, sticky="nesw")
-
-        Button (
-            buttons_frame, text="Add Book", command=self.add_book, bg="gray"
-        ).grid(row=0, column=0, pady=10, sticky="nesw")
+        buttons_frame = Frame(books_data, bg=black)
+        buttons_frame.grid(row=2, column=0, pady=10, sticky="nesw")
+        Button(
+            buttons_frame, text="Add Book", command=self.add_book, bg=dark_green, fg=black,
+            width=self.quantity_entry["width"] * 2
+        ).grid(row=0, column=0, columnspan=2, pady=10, sticky="nesw")
 
         Button(
-            buttons_frame, text="Update Book", command=self.update_book, bg="gray"
-        ).grid(row=1, column=0, pady=10, sticky="nesw")
+            buttons_frame, text="Update Book", command=self.update_book, bg=dark_green, fg=black,
+            width=self.quantity_entry["width"] * 2
+        ).grid(row=1, column=0, columnspan=2, pady=10, sticky="nesw")
 
         Button(
-            buttons_frame, text="Delete Book", command=self.delete_book, bg="gray"
-        ).grid(row=2, column=0, pady=10, sticky="nesw")
+            buttons_frame, text="Delete Book", command=self.delete_book, bg=dark_red, fg=black,
+            width=self.quantity_entry["width"] * 2
+        ).grid(row=2, column=0, columnspan=2, pady=10, sticky="nesw")
         # -------------------------------------------------------------------
 
         # Goto Home Button 3
-        home_frame = Frame(books_data)
-        home_frame.grid(row = 3, column = 0, sticky="nesw")
+        # home_frame = Frame(books_data, bg = black)
+        # home_frame.grid(row = 3, column = 0, sticky="nesw")
 
         btn_home = Button(
-            home_frame, text="Back to Home", command=self.show_home, bg="gray"
+            buttons_frame, text="Back to Home", command=self.show_home, bg=white, fg=black,
+            width=self.quantity_entry["width"] * 2
         )
-        btn_home.grid(pady=10, row = 0, column = 0, sticky="nesw")
+        btn_home.grid(pady=50, row=3, column=0, columnspan=2, sticky=S)
         # -------------------------------------------------------------------
-        #***************************************************************************************************************
+        # ***************************************************************************************************************
 
+        # ********************************************* search book *******************************************
+        search_frame = Frame(self.frame, bg=black)
+        search_frame.grid(row=0, column=1, sticky='WE')
 
+        label_search = Label(search_frame, text="Search", width=20, font=("Arial", 16), bg=black, fg=white)
+        label_search.grid(row=0, column=0, columnspan=3, padx=10, pady=10, sticky="WE")
 
-        #********************************************* search book *******************************************
-        search_frame = Frame(self.frame, bg = "red")
-        search_frame.grid(row = 0, column = 1)
+        self.search_entry = Entry(search_frame, width=40, font=("Arial", 13))
+        self.search_entry.grid(row=1, column=2, padx=10, pady=10, sticky="WE")
 
-        label_search = Label(search_frame, text = "Search")
-        label_search.grid(row = 0, column = 0, sticky="nesw")
+        btn_search = Button(search_frame, text="Search For Book", command=self.search_book,
+                            width=self.quantity_entry["width"] + 10, bg=dark_green, fg=black)
+        btn_search.grid(row=1, column=3, padx=10, pady=10, sticky="WE")
 
-        self.search_entry = Entry(search_frame)
-        self.search_entry.grid(row = 0, column = 1, sticky="nesw")
+        btn_clear_results = Button(search_frame, text="Delete Results", command=self.delete_results,
+                                   width=self.quantity_entry["width"] + 10, bg=dark_red, fg=black)
+        btn_clear_results.grid(row=1, column=4, padx=10, pady=10, sticky="WE")
+        # **********************************************************************************************
 
-        btn_search = Button(search_frame, text = "Search For Book", command=self.search_book)
-        btn_search.grid(row = 0, column = 2, sticky="nesw")
-
-        btn_clear_results = Button(search_frame, text = "Delete Results", command=self.delete_results)
-        btn_clear_results.grid(row = 0, column = 3, sticky="nesw")
-        #**********************************************************************************************
-
-
-        #********************************************* table books *******************************************
+        # ********************************************* table books *******************************************
 
         self.tree = ttk.Treeview(
             self.frame,
             columns=("id", "title", "author", "price", "quantity"),
             show="headings",
+            height=20
         )
         self.tree.heading("id", text="ID")
         self.tree.heading("title", text="Title")
         self.tree.heading("author", text="Author")
         self.tree.heading("price", text="Price")
         self.tree.heading("quantity", text="Quantity")
-        self.tree.grid(row = 1, column = 1)
-        self.tree.bind("<ButtonRelease-1>", self.on_item_click)
+        self.tree.grid(row=1, column=1)
         self.load_books()
-
 
     def load_books(self):
         # self.books = [
