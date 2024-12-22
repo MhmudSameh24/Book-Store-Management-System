@@ -1,18 +1,20 @@
 from tkinter import *
 
-from PyQt5.sip import delete
-
 from book import Book
 from manage_books import *
 from Validation import Validation
 from tkinter import ttk, messagebox
+from manage_bill import *
+from manage_users import *
 
-
+import re
 class ManageOrders:
     def __init__(self, master, show_home):
         self.master = master
         self.orders = []
         self.manage_books = ManageBook(SQLite("bookstore.db"))
+        self.manage_bills = ManageBill(SQLite("bookstore.db"))
+        self.manage_users = ManageUsers()
         self.show_home = show_home
         self.frame = Frame(master)
         self.orders = []
@@ -33,8 +35,8 @@ class ManageOrders:
         lab2 = Label(form_frame, text="Buyer's Email").grid(
             row=1, column=0, padx=5, pady=5
         )
-        self.emial_entry = Entry(form_frame)
-        self.emial_entry.grid(row=1, column=1, padx=5, pady=5)
+        self.email_entry = Entry(form_frame)
+        self.email_entry.grid(row=1, column=1, padx=5, pady=5)
 
         lab3 = Label(form_frame, text="Quantity").grid(row=2, column=0, padx=5, pady=5)
         self.quantity_entry = Spinbox(
@@ -55,9 +57,9 @@ class ManageOrders:
         btn2.grid(row=3, column=1, pady=10)
 
         btn3 = Button(form_frame, text="Clear cart", command=self.clear_cart, bg="gray")
-        btn3.grid(row=3, column=2, pady=10)
+        btn3.grid(row=3, column=2, pady=10, padx=10)
 
-        btn4 = Button(form_frame, text="Git Bill", command=self.add_order, bg="gray")
+        btn4 = Button(form_frame, text="Git Bill", command=self.git_bill, bg="gray")
         btn4.grid(row=3, column=3, pady=10)
 
         # --------------------------------------------------
@@ -96,6 +98,37 @@ class ManageOrders:
         self.tree.pack(pady=10)
         self.load_orders()
 
+        self.show_bill = Label(self.frame, width = 100, height=100, bg = "#E5E5E5", fg = '#252525')
+        self.show_bill.pack(pady=10)
+
+    def git_bill(self):
+        email = self.email_entry.get()
+        if  email and re.match(r'[a-z0-9]+@[a-z]+\.[a-z]{2,3}', email):
+            if len(self.orders):
+                if self.manage_users.user_exists(email):
+                    bills = dict()
+                    for item in self.orders:
+                        # print (item)
+                        bills[item.get_book_id()] = 0
+
+                    for item in self.orders:
+                        # print (item)
+                        bills[item.get_book_id()] += item.get_quantity()
+                    print(bills)
+                    # self.manage_bills.add_bill(bills, email)
+                    show_bills = self.manage_bills.create_bill(bills)
+                    self.show_bill["text"] = show_bills
+                    print(show_bills)
+
+                    self.reset_order_table()
+                else:
+                    messagebox.showerror("ERROR", "User Not Found")
+            else:
+                messagebox.showerror("ERROR", "No Book Selected")
+        else:
+            messagebox.showerror("ERROR", "Invalid Email")
+
+
     def add_to_cart(self):
         selected_item = self.books_tree.selection()
         if selected_item:
@@ -118,6 +151,8 @@ class ManageOrders:
         else:
             messagebox.showerror("Error", "Select a book")
 
+
+
     def remove_from_cart(self):
         selected_item = self.tree.selection()
         if selected_item:
@@ -138,8 +173,10 @@ class ManageOrders:
         else:
             messagebox.showerror("Error", "Select a book")
 
+
+
     def clear_cart(self):
-        quantity = int(self.quantity_entry.get())
+        quantity = (self.quantity_entry.get())
 
         for item in self.orders:
             book_id = item.get_book_id()
@@ -150,6 +187,7 @@ class ManageOrders:
         self.orders.clear()
         self.load_books()
         self.load_orders()
+
 
     def load_books(self):
         self.reset_book_table()
@@ -170,10 +208,10 @@ class ManageOrders:
         self.reset_order_table()
         for row in self.orders:
             self.tree.insert("", END, values=(row.get_book_id(),
-                                                    row.get_title(),
-                                                    row.get_author(),
-                                                    row.get_price(),
-                                                    row.get_quantity()))
+                                              row.get_title(),
+                                              row.get_author(),
+                                              row.get_price(),
+                                              row.get_quantity()))
         # self.books = self.manage_books.get_all_books()
         # # print(self.books)
 

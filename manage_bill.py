@@ -34,7 +34,7 @@ class ManageBill:
         return prices
 
     def __get_total_price_of_some_books(self, books_id: dict) -> float:
-        prices = self.get_prices_of_some_books(books_id)
+        prices = self.__get_prices_of_some_books(books_id)
         total_price = reduce(
             lambda x, y: x + y,
             [
@@ -47,9 +47,9 @@ class ManageBill:
     def add_bill(self, books_id: dict, user_email: str) -> None:
         self.db.open()
 
-        user_id = self.get_user_id(user_email)
-        prices = self.get_prices_of_some_books(books_id)
-        total_price = self.get_total_price_of_some_books(books_id)
+        user_id = self.__get_user_id(user_email)
+        prices = self.__get_prices_of_some_books(books_id)
+        total_price = self.__get_total_price_of_some_books(books_id)
 
         self.db.free_execute(
             "insert into bills (user_id, total) values (?, ?)",
