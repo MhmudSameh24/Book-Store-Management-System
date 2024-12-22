@@ -68,13 +68,14 @@ class ManageOrders:
         # -------------------Books Table-------------------
         self.books_tree = ttk.Treeview(
             self.frame,
-            columns=("book_id", "title", "author", "price"),
+            columns=("book_id", "title", "author", "price", "quantity"),
             show="headings",
         )
         self.books_tree.heading("book_id", text="Book ID")
         self.books_tree.heading("title", text="Title")
         self.books_tree.heading("author", text="Author")
         self.books_tree.heading("price", text="Price")
+        self.books_tree.heading("quantity", text="Quantity")
         self.books_tree.pack(pady=10)
         self.books_tree.pack(pady=10)
         self.load_books()
