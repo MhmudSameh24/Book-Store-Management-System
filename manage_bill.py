@@ -41,6 +41,7 @@ class ManageBill:
                 float(int(books_id[book_id]) * float(prices[book_id]))
                 for book_id in prices.keys()
             ],
+            0.0
         )
         return total_price
 
@@ -76,13 +77,18 @@ class ManageBill:
     def create_bill(self, books_ids: dict) -> str:
         bill: str = ""
         self.db.open()
+        print("create_bill: ")
+        print(books_ids)
+        print(list(books_ids.keys()))
+        placeholder = f"select * from Books where book_id in ({', '.join(['?']*len(books_ids.keys()))})"
         books_data_rows = self.manage_books.convert_rows(
-            self.db.free_execute(
-                "select * from books where book_id in (?)", (books_ids.keys())
+            self.db.free_execute_bill_manage(
+                placeholder, *books_ids.keys()
             )
         )
         self.db.close()
         total_price: float = 0.0
+        print(books_data_rows)
         for book in books_data_rows:
             sub_bill: str = ""
             sub_bill += f"book title : {book.get_title()}\n"
@@ -96,6 +102,7 @@ class ManageBill:
 
         bill += f"total price : {total_price : .2f}\n"
 
+        
         return bill
 
     def get_user_history(self, user_id: int) -> list[str]:

@@ -32,9 +32,10 @@ class Order:
 
     def get_ordered_books(self) -> list[Book]:
         self.db.open()
-        books_data = self.db.free_execute(
-            "select * from Books where book_id in (?)",
-            (self.books.keys())
+        placeholder = f"select * from Books where book_id in ({', '.join(['?']*len(self.books.keys()))})"
+        books_data = self.db.free_execute_bill_manage(
+            placeholder,
+            *self.books.keys()
         )
         self.db.close()
         ordered_books = [self.manage_books.convert_data_to_book(row) for row in books_data]
@@ -63,7 +64,12 @@ class Order:
             if not isgood:
                 return False
         
-        self.manage_bill.add_bill(self.books, user_email)
+        for book_id in self.books.keys():
+            newBook = self.manage_books.get_book(book_id)
+            newBook.set_quantity(newBook.get_quantity() - self.books[book_id])
+            self.manage_books.update_book(newBook)
+        
+        # self.manage_bill.add_bill(self.books, user_email)
         self.books.clear()
         
         return True

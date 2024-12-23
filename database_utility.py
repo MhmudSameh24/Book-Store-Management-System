@@ -81,10 +81,39 @@ class SQLite(DataBase):
             except:
                 return []
         else:
+            # print("args: ")
+            # print(args)
+            # if type(args[0]) == type(tuple):
+            #     self.cursor.execute(quary_text, args[0])
+            #     data = self.fixData(self.cursor.fetchall(), self.cursor.description)
+            #     return data
             try:
                 self.cursor.execute(quary_text, args)
                 data = self.fixData(self.cursor.fetchall(), self.cursor.description)
+            except Exception as e:
+                print(e)
+                return []
+        return data
+    
+    def free_execute_bill_manage(self, quary_text="", *args):
+        if len(tuple(args)) == 0:
+            try:
+                self.cursor.execute(quary_text)
+                data = self.fixData(self.cursor.fetchall(), self.cursor.description)
             except:
+                return []
+        else:
+            print("args: ")
+            print(args)
+            # if type(args[0]) == type(tuple):
+            #     self.cursor.execute(quary_text, args[0])
+            #     data = self.fixData(self.cursor.fetchall(), self.cursor.description)
+            #     return data
+            try:
+                self.cursor.execute(quary_text, args)
+                data = self.fixData(self.cursor.fetchall(), self.cursor.description)
+            except Exception as e:
+                print(e)
                 return []
         return data
 

@@ -6,12 +6,15 @@ from Validation import Validation
 from tkinter import ttk, messagebox
 from manage_bill import *
 from manage_users import *
-
+from order import *
 import re
+
+
 class ManageOrders:
     def __init__(self, master, show_home):
         self.master = master
         self.orders = []
+        self.manage_orders = Order(SQLite("bookstore.db"))
         self.manage_books = ManageBook(SQLite("bookstore.db"))
         self.manage_bills = ManageBill(SQLite("bookstore.db"))
         self.manage_users = ManageUsers()
@@ -48,7 +51,9 @@ class ManageOrders:
         )
         self.quantity_entry.grid(row=2, column=1, padx=5, pady=5)
 
-        btn1 = Button(form_frame, text="Add To Cart", command=self.add_to_cart, bg="gray")
+        btn1 = Button(
+            form_frame, text="Add To Cart", command=self.add_to_cart, bg="gray"
+        )
         btn1.grid(row=3, column=0, pady=10)
 
         btn2 = Button(
@@ -72,6 +77,7 @@ class ManageOrders:
             self.frame,
             columns=("book_id", "title", "author", "price", "quantity"),
             show="headings",
+            height=5,
         )
         self.books_tree.heading("book_id", text="Book ID")
         self.books_tree.heading("title", text="Title")
@@ -87,6 +93,7 @@ class ManageOrders:
             self.frame,
             columns=("book_id", "title", "author", "price", "quantity"),
             show="headings",
+            height=5,
         )
 
         self.tree.heading("book_id", text="Book ID")
@@ -98,12 +105,45 @@ class ManageOrders:
         self.tree.pack(pady=10)
         self.load_orders()
 
-        self.show_bill = Label(self.frame, width = 100, height=100, bg = "#E5E5E5", fg = '#252525')
+        self.show_bill_frame = Frame(self.frame)
+        self.show_bill_frame.pack(pady=10)
+
+        # make the text start at the top of the text widget
+
+        self.show_bill_canvas = Canvas(self.show_bill_frame, width=800, height=200)
+        self.show_bill_canvas.pack(side=LEFT)
+
+        self.show_bill_scrollbar = Scrollbar(
+            self.show_bill_frame, orient=VERTICAL, command=self.show_bill_canvas.yview
+        )
+        self.show_bill_scrollbar.pack(side=RIGHT, fill=Y)
+
+        self.show_bill_canvas.configure(yscrollcommand=self.show_bill_scrollbar.set)
+        self.show_bill_canvas.bind(
+            "<Configure>",
+            lambda e: self.show_bill_canvas.configure(
+                scrollregion=self.show_bill_canvas.bbox("all")
+            ),
+        )
+
+        self.show_bill_inner_frame = Frame(self.show_bill_canvas)
+        self.show_bill_canvas.create_window(
+            (0, 0), window=self.show_bill_inner_frame, anchor="nw"
+        )
+
+        self.show_bill = Label(
+            self.show_bill_inner_frame,
+            width=100,
+            height=100,
+            bg="#E5E5E5",
+            fg="#252525",
+        )
+        self.show_bill.pack()
         self.show_bill.pack(pady=10)
 
     def git_bill(self):
         email = self.email_entry.get()
-        if  email and re.match(r'[a-z0-9]+@[a-z]+\.[a-z]{2,3}', email):
+        if email and re.match(r"[a-z0-9]+@[a-z]+\.[a-z]{2,3}", email):
             if len(self.orders):
                 if self.manage_users.user_exists(email):
                     bills = dict()
@@ -116,7 +156,9 @@ class ManageOrders:
                         bills[item.get_book_id()] += item.get_quantity()
                     print(bills)
                     # self.manage_bills.add_bill(bills, email)
-                    show_bills = self.manage_bills.create_bill(bills)
+                    # show_bills = self.manage_bills.create_bill(bills)
+                    show_bills = self.manage_orders.create_bill()
+                    self.manage_orders.complete_purchase(email)
                     self.show_bill["text"] = show_bills
                     print(show_bills)
 
@@ -128,7 +170,6 @@ class ManageOrders:
         else:
             messagebox.showerror("ERROR", "Invalid Email")
 
-
     def add_to_cart(self):
         selected_item = self.books_tree.selection()
         if selected_item:
@@ -138,11 +179,13 @@ class ManageOrders:
             quantity = int(self.quantity_entry.get())
 
             if quantity <= book.get_quantity():
-                book.set_quantity(book.get_quantity() - quantity)
-                self.manage_books.update_book(book)
+                # book.set_quantity(book.get_quantity() - quantity)
+                # self.manage_books.update_book(book)
                 book.set_quantity(quantity)
 
-                self.orders.append(book)
+                self.manage_orders.add_book(book_id, quantity)
+                # self.orders.append(book)
+                self.orders = self.manage_orders.get_ordered_books()
 
                 self.load_books()
                 self.load_orders()
@@ -150,8 +193,6 @@ class ManageOrders:
                 messagebox.showerror("Error", "the book is limited")
         else:
             messagebox.showerror("Error", "Select a book")
-
-
 
     def remove_from_cart(self):
         selected_item = self.tree.selection()
@@ -173,10 +214,8 @@ class ManageOrders:
         else:
             messagebox.showerror("Error", "Select a book")
 
-
-
     def clear_cart(self):
-        quantity = (self.quantity_entry.get())
+        quantity = self.quantity_entry.get()
 
         for item in self.orders:
             book_id = item.get_book_id()
@@ -188,17 +227,22 @@ class ManageOrders:
         self.load_books()
         self.load_orders()
 
-
     def load_books(self):
         self.reset_book_table()
         self.books = self.manage_books.get_all_books()
         # print(self.books)
         for row in self.books:
-            self.books_tree.insert("", END, values=(row.get_book_id(),
-                                                    row.get_title(),
-                                                    row.get_author(),
-                                                    row.get_price(),
-                                                    row.get_quantity()))
+            self.books_tree.insert(
+                "",
+                END,
+                values=(
+                    row.get_book_id(),
+                    row.get_title(),
+                    row.get_author(),
+                    row.get_price(),
+                    row.get_quantity(),
+                ),
+            )
 
     def reset_book_table(self):
         for item in self.books_tree.get_children():
@@ -207,11 +251,17 @@ class ManageOrders:
     def load_orders(self):
         self.reset_order_table()
         for row in self.orders:
-            self.tree.insert("", END, values=(row.get_book_id(),
-                                              row.get_title(),
-                                              row.get_author(),
-                                              row.get_price(),
-                                              row.get_quantity()))
+            self.tree.insert(
+                "",
+                END,
+                values=(
+                    row.get_book_id(),
+                    row.get_title(),
+                    row.get_author(),
+                    row.get_price(),
+                    row.get_quantity(),
+                ),
+            )
         # self.books = self.manage_books.get_all_books()
         # # print(self.books)
 
@@ -226,17 +276,17 @@ class ManageOrders:
         for item in self.tree.get_children():
             self.tree.delete(item)
 
-    def add_order(self):
-        book_id = self.book_id_entry.get()
-        user_id = self.user_id_entry.get()
-        quantity = self.quantity_entry.get()
+    # def add_order(self):
+    #     book_id = self.book_id_entry.get()
+    #     user_id = self.user_id_entry.get()
+    #     quantity = self.quantity_entry.get()
 
-        if book_id and user_id and quantity:
-            self.orders.append((book_id, user_id, quantity))
-            messagebox.showinfo("Success", "Order added successfully")
-            self.load_orders()
-        else:
-            messagebox.showerror("Error", "All fields are required")
+    #     if book_id and user_id and quantity:
+    #         self.orders.append((book_id, user_id, quantity))
+    #         messagebox.showinfo("Success", "Order added successfully")
+    #         self.load_orders()
+    #     else:
+    #         messagebox.showerror("Error", "All fields are required")
 
     def display(self):
         self.frame.pack(fill=BOTH, expand=True)

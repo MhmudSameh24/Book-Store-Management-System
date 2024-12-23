@@ -74,5 +74,6 @@ class LoginPage:
 if __name__ == "__main__":
     root = Tk()
     login_page = LoginPage(root)
-
+    root.state("zoomed")
+    # root.resizable(False, False)
     root.mainloop()
