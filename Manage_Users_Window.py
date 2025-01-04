@@ -116,7 +116,7 @@ class ManageUsers:
             self.email_entry.insert(0, values[1])
 
     def validate_email(self, email):
-        regex = "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
+        regex = "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$"
         if re.search(regex, email):
             return True
         return False
