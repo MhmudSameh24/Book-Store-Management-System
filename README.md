@@ -22,11 +22,12 @@ Before running the project, ensure you have the following installed:
 
    ```bash
    git clone https://github.com/MhmudSameh24/Book-Store-Management-System.git
-   cd bookstore-management-system
+   cd Book-Store-Management-System/Source
    ```
 
 2. **Install required packages**:
    The project uses the following Python packages:
+
    - `tkinter` (usually comes pre-installed with Python)
    - `sqlite3` (comes pre-installed with Python)
    - `faker` (for generating fake data, optional)
@@ -38,6 +39,7 @@ Before running the project, ensure you have the following installed:
    ```
 
 3. **Set up the database**:
+
    - Run the `schema.sql` script to create the necessary tables in the SQLite database:
 
      ```bash
@@ -61,6 +63,7 @@ Before running the project, ensure you have the following installed:
    ```
 
 2. **Login**:
+
    - Use the following credentials to log in:
      - **Username**: `admin`
      - **Password**: `1234`
