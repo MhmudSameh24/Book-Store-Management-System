@@ -2,6 +2,15 @@
 
 This is a **Bookstore Management System** built using Python and SQLite. The system allows users to manage books, users, and orders through a graphical user interface (GUI) created with `tkinter`. It also includes functionality for generating bills and managing inventory.
 
+## Contributors
+
+- [Mahmoud Sameh](@MhmudSameh24)
+- [Mazen Ghanayem](@Mazen-Ghanaym)
+- [Youssef Gaber](@Yousef-Gaber11)
+- [Ahmed Wahba](@abowahbaz)
+- [Islam Imad](@Islam-Imad)
+- [Mohamed Mahmoud](@mohammedmoud)
+
 ## Features
 
 - **Manage Books**: Add, update, delete, and search for books in the database.
