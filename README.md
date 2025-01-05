@@ -1,8 +1,8 @@
-# Bookstore Management System
+# 📚 Bookstore Management System
 
 This is a **Bookstore Management System** built using Python and SQLite. The system allows users to manage books, users, and orders through a graphical user interface (GUI) created with `tkinter`. It also includes functionality for generating bills and managing inventory.
 
-## Contributors
+## 👥 Contributors
 
 - [Mahmoud Sameh](https://github.com/MhmudSameh24)
 - [Mazen Ghanayem](https://github.com/Mazen-Ghanaym)
@@ -11,21 +11,21 @@ This is a **Bookstore Management System** built using Python and SQLite. The sys
 - [Islam Imad](https://github.com/Islam-Imad)
 - [Mohamed Mahmoud](https://github.com/mohammedmoud)
 
-## Features
+## ✨ Features
 
 - **Manage Books**: Add, update, delete, and search for books in the database.
 - **Manage Users**: Add, update, delete, and search for users.
 - **Manage Orders**: Create and manage orders, generate bills, and track inventory.
 - **Database Integration**: Uses SQLite for storing books, users, and orders.
 
-## Prerequisites
+## 📋 Prerequisites
 
 Before running the project, ensure you have the following installed:
 
 - **Python 3.x**: The project is written in Python. You can download it from [python.org](https://www.python.org/downloads/).
 - **SQLite**: The database used in this project. It comes pre-installed with Python.
 
-## Installation
+## 🛠️ Installation
 
 1. **Clone the repository**:
 
@@ -53,7 +53,6 @@ Before running the project, ensure you have the following installed:
 
      ```bash
      sqlite3 bookstore.db < schema.sql
-
      ```
 
    - Optionally, you can populate the database with fake data using the `script.py` file:
@@ -62,7 +61,7 @@ Before running the project, ensure you have the following installed:
      python script.py
      ```
 
-## Running the Application
+## 🚀 Running the Application
 
 1. **Start the application**:
    Run the `Home_Window.py` file to start the application:
@@ -83,7 +82,7 @@ Before running the project, ensure you have the following installed:
      - **Manage Users**: Add, update, delete, and search for users.
      - **Manage Orders**: Create orders, generate bills, and manage inventory.
 
-## Project Structure
+## 🗂️ Project Structure
 
 - **`book.py`**: Contains the `Book` class for managing book data.
 - **`database_utility.py`**: Handles database operations using SQLite.
@@ -98,7 +97,7 @@ Before running the project, ensure you have the following installed:
 - **`user.py`**: Contains the `User` class for managing user data.
 - **`Validation.py`**: Handles input validation and error messages.
 
-## Contributing
+## 🤝 Contributing
 
 If you'd like to contribute to this project, please follow these steps:
 
@@ -108,7 +107,7 @@ If you'd like to contribute to this project, please follow these steps:
 4. Push your changes to your fork.
 5. Submit a pull request.
 
-## Acknowledgments
+## 🙏 Acknowledgments
 
 - **Tkinter**: For providing the GUI framework.
 - **SQLite**: For the lightweight database solution.
