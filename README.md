@@ -7,7 +7,7 @@ This is a **Bookstore Management System** built using Python and SQLite. The sys
 - [Mahmoud Sameh](https://github.com/MhmudSameh24)
 - [Mazen Ghanayem](https://github.com/Mazen-Ghanaym)
 - [Youssef Gaber](https://github.com/Yousef-Gaber11)
-- [Ahmed Wahba](https://github.com/abowahbaz)
+- [Ahmed M. Wahba](https://github.com/abowahbaz)
 - [Islam Imad](https://github.com/Islam-Imad)
 - [Mohamed Mahmoud](https://github.com/mohammedmoud)
 
