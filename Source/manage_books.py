@@ -8,7 +8,6 @@ class ManageBook:
 
     def add_book(self, book: Book):
         # Add a book to the Database
-        self.db.open()
         self.db.free_execute(
             "INSERT INTO Books (title, author, price, quantity) VALUES (?, ?, ?, ?)",
             book.get_title(),
@@ -17,18 +16,14 @@ class ManageBook:
             book.get_quantity(),
         )
         self.db.commit()
-        self.db.close()
 
     def remove_book(self, book_id: int):
         # Remove a book from the Database
-        self.db.open()
         self.db.free_execute("DELETE FROM Books WHERE book_id = ?", book_id)
         self.db.commit()
-        self.db.close()
 
     def update_book(self, book: Book):
         # Update the book details
-        self.db.open()
         self.db.free_execute(
             "UPDATE Books SET title = ?, author = ?, price = ?, quantity = ? WHERE book_id = ?",
             book.get_title(),
@@ -38,33 +33,26 @@ class ManageBook:
             book.get_book_id(),
         )
         self.db.commit()
-        self.db.close()
 
     def get_book(self, book_id: int) -> Book:
         # Get the book details
-        self.db.open()
         row = self.db.free_execute("SELECT * FROM Books WHERE book_id = ?", book_id)
-        self.db.close()
         if len(row) == 0:
             return None
         return self.convert_data_to_book(row[0])
 
     def search_book(self, search_string: str) -> list[Book]:
         # Search for a book by title or author
-        self.db.open()
         rows = self.db.free_execute(
             "SELECT * FROM Books WHERE title LIKE ? OR author LIKE ?",
             f"%{search_string}%",
             f"%{search_string}%"
         )
-        self.db.close()
         return self.convert_rows(rows)
 
     def get_all_books(self) -> list[Book]:
         # Get all the books
-        self.db.open()
         rows = self.db.free_execute("SELECT * FROM Books")
-        self.db.close()
         return self.convert_rows(rows)
 
     def convert_data_to_book(self, row: dict) -> Book:
@@ -87,7 +75,7 @@ class ManageBook:
 
 # test manage_books.py
 if __name__ == "__main__":
-    dbobj = SQLite("bookstore.db")
+    dbobj = SQLite("Source/bookstore.db")
     manage_books = ManageBook(dbobj)
 
     # Add a book
