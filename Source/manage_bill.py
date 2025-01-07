@@ -10,26 +10,20 @@ class ManageBill:
         self.manage_books = ManageBook(db)
 
     def __get_user_id(self, user_email: str) -> int:
-        self.db.open()
         user_id = int(
             self.db.free_execute(
                 "select user_id from users where email like ?", user_email
             )[0]["user_id"]
         )
-        self.db.close()
         return user_id
 
     def __get_prices_of_some_books(self, books_ids: dict) -> dict:
-        self.db.open()
-
         prices_data_row = self.db.free_execute(
             "select book_id, price from books where book_id in (?)", (books_ids.keys())
         )
         prices = dict()
         for row in prices_data_row:
             prices[int(row["book_id"])] = row["price"]
-
-        self.db.close()
 
         return prices
 
@@ -46,8 +40,6 @@ class ManageBill:
         return total_price
 
     def add_bill(self, books_id: dict, user_email: str) -> None:
-        self.db.open()
-
         user_id = self.__get_user_id(user_email)
         prices = self.__get_prices_of_some_books(books_id)
         total_price = self.__get_total_price_of_some_books(books_id)
@@ -72,7 +64,6 @@ class ManageBill:
             )
 
         self.db.commit()
-        self.db.close()
 
     def create_bill(self, books_ids: dict) -> str:
         bill: str = ""
@@ -86,7 +77,6 @@ class ManageBill:
                 placeholder, *books_ids.keys()
             )
         )
-        self.db.close()
         total_price: float = 0.0
         print(books_data_rows)
         for book in books_data_rows:

@@ -31,25 +31,23 @@ class Order:
             self.books.pop(book_id)
 
     def get_ordered_books(self) -> list[Book]:
-        self.db.open()
         placeholder = f"select * from Books where book_id in ({', '.join(['?']*len(self.books.keys()))})"
         books_data = self.db.free_execute_bill_manage(
             placeholder,
             *self.books.keys()
         )
-        self.db.close()
         ordered_books = [self.manage_books.convert_data_to_book(row) for row in books_data]
         return ordered_books
 
     def verify_quantity(self, book_id : int) -> bool:
         if book_id not in self.books:
             return False
-        self.db.open()
+        
         data_row = self.db.free_execute(
             "select quantity from books where book_id = ?",
             book_id
         )
-        self.db.close()
+
         if len(data_row) == 0:
             return False
         real_quantity = int(data_row[0]["quantity"])
