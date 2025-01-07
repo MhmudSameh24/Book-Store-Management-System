@@ -4,6 +4,9 @@ from manage_books import *
 from Validation import Validation
 from tkinter import ttk, messagebox
 
+# from databasesFile import main_database_conection
+from classesFile import manage_book_conection
+
 red = "#C00000"
 dark_red = "#8B0000"
 green = "#25D366"
@@ -18,7 +21,8 @@ yellow = "#ffe400"
 class ManageBooks:
     def __init__(self, master, show_home):
         # self.dbobj = SQLite("bookstore.db")
-        self.manage_books = ManageBook(SQLite("Source/bookstore.db"))
+        # self.manage_books = ManageBook(SQLite("Source/bookstore.db"))
+        self.manage_books = manage_book_conection
         self.valid = Validation()
         self.books = []
         self.master = master

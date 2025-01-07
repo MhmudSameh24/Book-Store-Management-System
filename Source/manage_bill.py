@@ -16,7 +16,7 @@ class ManageBill:
             )[0]["user_id"]
         )
         return user_id
-
+    
     def __get_prices_of_some_books(self, books_ids: dict) -> dict:
         prices_data_row = self.db.free_execute(
             "select book_id, price from books where book_id in (?)", (books_ids.keys())

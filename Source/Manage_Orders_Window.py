@@ -1,7 +1,7 @@
 from tkinter import *
 
 from book import Book
-from manage_books import *
+# from manage_books import *
 from Validation import Validation
 from tkinter import ttk, messagebox
 from manage_bill import *
@@ -9,15 +9,17 @@ from manage_users import *
 from order import *
 import re
 
+from classesFile import manage_book_conection, manage_user_conection, manage_bill_conection
+from databasesFile import main_database_conection 
 
 class ManageOrders:
     def __init__(self, master, show_home):
         self.master = master
         self.orders = []
-        self.manage_orders = Order(SQLite("Source/bookstore.db"))
-        self.manage_books = ManageBook(SQLite("Source/bookstore.db"))
-        self.manage_bills = ManageBill(SQLite("Source/bookstore.db"))
-        self.manage_users = ManageUsers()
+        self.manage_orders = Order(main_database_conection)
+        self.manage_bills = manage_bill_conection
+        self.manage_books = manage_book_conection
+        self.manage_users = manage_user_conection
         self.show_home = show_home
         self.frame = Frame(master)
         self.orders = []

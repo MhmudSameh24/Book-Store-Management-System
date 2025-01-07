@@ -3,6 +3,7 @@ from tkinter import ttk, messagebox
 import re
 from manage_users import ManageUsers as ManageUsersDB
 from user import User
+from databasesFile import main_database_conection
 
 red = "#C00000"
 dark_red = "#8B0000"
@@ -18,6 +19,7 @@ dark_blue = "#2980b9"
 class ManageUsers:
     def __init__(self, master, show_home):
         self.master = master
+        self.manage_user = ManageUsersDB(main_database_conection)
         self.show_home = show_home
         self.frame = Frame(master)
         self.create_ui()
@@ -127,7 +129,7 @@ class ManageUsers:
             state = self.add_record(email)
             if state:
                 messagebox.showinfo("Success", "User added successfully")
-                added_user = ManageUsersDB().get_user_by_email(email)
+                added_user = self.manage_user.get_user_by_email(email)
                 self.add_to_view((added_user.get_id(), added_user.get_email()))
             else:
                 messagebox.showerror("Error", "User already exists")
@@ -178,14 +180,14 @@ class ManageUsers:
 
     # --------------------------------- Database Operations ---------------------------------
     def add_record(self, new_email):
-        state = ManageUsersDB().add_user(new_email)
+        state = self.manage_user.add_user(new_email)
         return state
 
     def delete_record(self, id):
-        ManageUsersDB().remove_user(id)
+        self.manage_user.remove_user(id)
 
     def update_record(self, updated_user):
-        state = ManageUsersDB().update_user(updated_user)
+        state = self.manage_user.update_user(updated_user)
         return state
 
     # -----------------------------------------------------------------------------------------
@@ -194,7 +196,7 @@ class ManageUsers:
         search_text = self.search_txt.get()
         if len(search_text):
             self.tree.delete(*self.tree.get_children())
-            records = ManageUsersDB().search(search_text)
+            records = self.manage_user.search(search_text)
             for record in records:
                 self.add_to_view((record.get_id(), record.get_email()))
         else:
@@ -209,7 +211,7 @@ class ManageUsers:
         self.tree.insert("", "end", values=record)
 
     def load_records(self):
-        records = ManageUsersDB().load_all_users()
+        records = self.manage_user.load_all_users()
         for record in records:
             self.add_to_view((record.get_id(), record.get_email()))
 
