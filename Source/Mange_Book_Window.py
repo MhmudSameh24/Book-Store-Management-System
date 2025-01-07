@@ -201,7 +201,7 @@ class ManageBooks:
         self.reset_table()
 
         self.books = self.manage_books.get_all_books()
-        print(self.books)
+        # print(self.books)
 
         for row in self.books:
             self.tree.insert(
