@@ -3,10 +3,9 @@ import user as us
 
 
 class ManageUsers:
-    def __init__(self):
-        self.db = dbu.SQLite("Source/bookstore.db")
+    def __init__(self, db: dbu.SQLite):
+        self.db = db
         self.user_table = "Users"
-        self.db.open()
 
     def add_user(self, user_email: str) -> bool:
         if self.user_exists(user_email):
@@ -89,10 +88,6 @@ class ManageUsers:
             user = self.convert_data_to_user(row)
             users.append(user)
         return users
-
-    def __del__(self):
-        self.db.close()
-
 
     def __remove_all_users(self) -> None:
         self.db.free_execute("DELETE FROM Users")
