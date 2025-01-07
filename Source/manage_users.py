@@ -4,7 +4,7 @@ import user as us
 
 class ManageUsers:
     def __init__(self):
-        self.db = dbu.SQLite("bookstore.db")
+        self.db = dbu.SQLite("Source/bookstore.db")
         self.user_table = "Users"
         self.db.open()
 

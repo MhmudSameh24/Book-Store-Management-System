@@ -18,7 +18,7 @@ yellow = "#ffe400"
 class ManageBooks:
     def __init__(self, master, show_home):
         # self.dbobj = SQLite("bookstore.db")
-        self.manage_books = ManageBook(SQLite("bookstore.db"))
+        self.manage_books = ManageBook(SQLite("Source/bookstore.db"))
         self.valid = Validation()
         self.books = []
         self.master = master

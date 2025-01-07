@@ -14,9 +14,9 @@ class ManageOrders:
     def __init__(self, master, show_home):
         self.master = master
         self.orders = []
-        self.manage_orders = Order(SQLite("bookstore.db"))
-        self.manage_books = ManageBook(SQLite("bookstore.db"))
-        self.manage_bills = ManageBill(SQLite("bookstore.db"))
+        self.manage_orders = Order(SQLite("Source/bookstore.db"))
+        self.manage_books = ManageBook(SQLite("Source/bookstore.db"))
+        self.manage_bills = ManageBill(SQLite("Source/bookstore.db"))
         self.manage_users = ManageUsers()
         self.show_home = show_home
         self.frame = Frame(master)
