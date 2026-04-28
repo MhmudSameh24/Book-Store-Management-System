@@ -3,6 +3,8 @@ from tkinter import ttk, messagebox
 from order import Order
 from classesFile import manage_book_conection, manage_user_conection, manage_bill_conection
 from databasesFile import main_database_conection
+import json
+import os
 
 # Custom Styles
 COLOR_PRIMARY = "#2c3e50"
@@ -28,7 +30,16 @@ class ManageOrders:
         header = Frame(self.frame, bg=COLOR_PRIMARY, height=60)
         header.pack(side=TOP, fill=X)
         
-        Label(header, text="PRO Bookstore POS", font=("Segoe UI", 18, "bold"), 
+        store_name = "PRO Bookstore POS"
+        if os.path.exists("config.json"):
+            try:
+                with open("config.json", "r") as f:
+                    data = json.load(f)
+                    name = data.get("name", "").strip()
+                    if name: store_name = name
+            except: pass
+        
+        Label(header, text=store_name, font=("Segoe UI", 18, "bold"), 
               fg="white", bg=COLOR_PRIMARY).pack(side=LEFT, padx=20, pady=10)
         
         Button(header, text="Logout to Home", command=self.back_to_home, 
@@ -184,6 +195,10 @@ class ManageOrders:
             self.cart_tree.insert("", "end", values=(b.get_book_id(), b.get_title(), qty, f"${b.get_price()*qty:.2f}"))
 
     def complete_sale(self):
+        if not self.order_logic.books:
+            messagebox.showwarning("Empty Cart", "Your cart is empty. Please add items before finalizing the sale.")
+            return
+            
         email = self.email_entry.get()
         if not email or "@" not in email:
             messagebox.showwarning("Input", "Enter a valid email.")

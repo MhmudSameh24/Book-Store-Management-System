@@ -1,4 +1,6 @@
 from tkinter import *
+import json
+import os
 from Validation import Validation
 from tkinter import ttk, messagebox
 from Mange_Book_Window import ManageBooks
@@ -11,7 +13,19 @@ from Settings_Window import SettingsWindow
 class BookstoreApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("Bookstore Management System")
+        
+        self.store_name = "Bookstore Management System"
+        if os.path.exists("config.json"):
+            try:
+                with open("config.json", "r") as f:
+                    data = json.load(f)
+                    name = data.get("name", "").strip()
+                    if name:
+                        self.store_name = name
+            except:
+                pass
+
+        self.root.title(self.store_name)
         self.root.geometry("800x500")
         # icon = PhotoImage(file="Icon.png")
         # self.root.iconphoto(False, icon)
@@ -31,7 +45,7 @@ class BookstoreApp:
 
         lab1 = Label(
             self.home_frame,
-            text="Bookstore Management System",
+            text=self.store_name,
             font=("Arial", 35),
             fg="#2c3e50",
         )

@@ -67,11 +67,30 @@ class ManageBill:
         self.db.commit()
 
     def create_bill(self, books_ids: dict) -> str:
+        import json
+        import os
+        
         bill: str = ""
+        
+        store_name = "Bookstore"
+        store_address = ""
+        store_email = ""
+        if os.path.exists("config.json"):
+            try:
+                with open("config.json", "r") as f:
+                    data = json.load(f)
+                    store_name = data.get("name", store_name)
+                    store_address = data.get("address", "")
+                    store_email = data.get("email", "")
+            except: pass
+            
+        bill += f"=== {store_name} ===\n"
+        if store_address: bill += f"{store_address}\n"
+        if store_email: bill += f"Email: {store_email}\n"
+        bill += "="*30 + "\n\n"
+        
         self.db.open()
         print("create_bill: ")
-        print(books_ids)
-        print(list(books_ids.keys()))
         placeholder = f"select * from Books where book_id in ({', '.join(['?']*len(books_ids.keys()))})"
         books_data_rows = self.manage_books.convert_rows(
             self.db.free_execute_bill_manage(
