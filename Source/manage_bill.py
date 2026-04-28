@@ -18,8 +18,9 @@ class ManageBill:
         return user_id
     
     def __get_prices_of_some_books(self, books_ids: dict) -> dict:
-        prices_data_row = self.db.free_execute(
-            "select book_id, price from books where book_id in (?)", (books_ids.keys())
+        placeholder = f"select book_id, price from books where book_id in ({', '.join(['?']*len(books_ids.keys()))})"
+        prices_data_row = self.db.free_execute_bill_manage(
+            placeholder, *books_ids.keys()
         )
         prices = dict()
         for row in prices_data_row:
@@ -50,14 +51,14 @@ class ManageBill:
             total_price,
         )
 
-        last_bill_id = self.db.free_execute("select bill_id from bills limit 1")[0][
+        last_bill_id = self.db.free_execute("select bill_id from bills order by bill_id desc limit 1")[0][
             "bill_id"
         ]
 
         for book_id in books_id.keys():
             self.db.free_execute(
-                "insert into bookorder (book_id, price_per_book, quatity, bill_id) values (?, ?, ?, ?)",
-                user_id,
+                "insert into bookorder (book_id, price_per_book, quantity, bill_id) values (?, ?, ?, ?)",
+                book_id,
                 prices[book_id],
                 books_id[book_id],
                 last_bill_id,

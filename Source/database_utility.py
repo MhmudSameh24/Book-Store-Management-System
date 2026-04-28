@@ -69,6 +69,8 @@ class SQLite(DataBase):
         return self._cursor
 
     def fixData(self, db_fetch : list[dict], db_disc : list) -> list[dict]:
+        if db_disc is None:
+            return []
         cols_disc = [col[0] for col in db_disc]
         rows = [dict(zip(cols_disc, row)) for row in db_fetch]
         return rows

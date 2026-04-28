@@ -67,8 +67,8 @@ class Order:
             newBook.set_quantity(newBook.get_quantity() - self.books[book_id])
             self.manage_books.update_book(newBook)
         
-        # self.manage_bill.add_bill(self.books, user_email)
-        self.books.clear()
+        self.manage_bill.add_bill(self.books, user_email)
+        # self.books.clear()  # Moved to Manage_Orders_Window.py
         
         return True
 

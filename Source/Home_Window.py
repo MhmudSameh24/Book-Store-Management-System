@@ -4,6 +4,8 @@ from tkinter import ttk, messagebox
 from Mange_Book_Window import ManageBooks
 from Manage_Users_Window import ManageUsers
 from Manage_Orders_Window import ManageOrders
+from Report_Window import ReportWindow
+from Settings_Window import SettingsWindow
 
 
 class BookstoreApp:
@@ -19,6 +21,8 @@ class BookstoreApp:
         self.home_frame.grid_rowconfigure(2, weight=1)
         self.home_frame.grid_rowconfigure(3, weight=1)
         self.home_frame.grid_rowconfigure(4, weight=1)
+        self.home_frame.grid_rowconfigure(5, weight=1)
+        self.home_frame.grid_rowconfigure(6, weight=1)
         self.home_frame.grid_columnconfigure(0, weight=1)
         self.home_frame.grid_columnconfigure(2, weight=1)
 
@@ -72,6 +76,32 @@ class BookstoreApp:
         )
         btn3.grid(row=3, column=0, columnspan=5, padx=10, pady=10)
 
+        btn4 = Button(
+            self.home_frame,
+            text="Business Reports",
+            command=self.open_reports,
+            width=35,
+            height=2,
+            bg="#3498db",
+            font=("Arial", 20),
+            activebackground="#2980b9",
+            activeforeground="#ffffff",
+        )
+        btn4.grid(row=4, column=0, columnspan=5, padx=10, pady=10)
+
+        btn5 = Button(
+            self.home_frame,
+            text="Settings",
+            command=self.open_settings,
+            width=35,
+            height=2,
+            bg="#3498db",
+            font=("Arial", 20),
+            activebackground="#2980b9",
+            activeforeground="#ffffff",
+        )
+        btn5.grid(row=5, column=0, columnspan=5, padx=10, pady=10)
+
         self.home_frame.pack(fill=BOTH, expand=True)
 
     def open_manage_books(self):
@@ -89,6 +119,16 @@ class BookstoreApp:
         self.manage_orders = ManageOrders(self.root, self.show_home)
         self.manage_orders.display()
 
+    def open_reports(self):
+        self.home_frame.pack_forget()
+        self.report_window = ReportWindow(self.root, self.show_home)
+        self.report_window.display()
+
+    def open_settings(self):
+        self.home_frame.pack_forget()
+        self.settings_window = SettingsWindow(self.root, self.show_home)
+        self.settings_window.display()
+
     def show_home(self):
         if hasattr(self, "manage_books"):
             self.manage_books.hide()
@@ -96,6 +136,10 @@ class BookstoreApp:
             self.manage_users.hide()
         if hasattr(self, "manage_orders"):
             self.manage_orders.hide()
+        if hasattr(self, "report_window"):
+            self.report_window.hide()
+        if hasattr(self, "settings_window"):
+            self.settings_window.hide()
 
         self.home_frame.pack(fill=BOTH, expand=True)
 

@@ -1,302 +1,230 @@
 from tkinter import *
-
-from book import Book
-# from manage_books import *
-from Validation import Validation
 from tkinter import ttk, messagebox
-from manage_bill import *
-from manage_users import *
-from order import *
-import re
-
+from order import Order
 from classesFile import manage_book_conection, manage_user_conection, manage_bill_conection
-from databasesFile import main_database_conection 
+from databasesFile import main_database_conection
+
+# Custom Styles
+COLOR_PRIMARY = "#2c3e50"
+COLOR_ACCENT = "#3498db"
+COLOR_SUCCESS = "#27ae60"
+COLOR_DANGER = "#e74c3c"
+COLOR_BG = "#f8f9fa"
 
 class ManageOrders:
     def __init__(self, master, show_home):
         self.master = master
-        self.orders = []
-        self.manage_orders = Order(main_database_conection)
-        self.manage_bills = manage_bill_conection
-        self.manage_books = manage_book_conection
-        self.manage_users = manage_user_conection
         self.show_home = show_home
-        self.frame = Frame(master)
-        self.orders = []
-        self.create_ui()
+        
+        # Logic Objects
+        self.order_logic = Order(main_database_conection)
+        self.bill_logic = manage_bill_conection
+        
+        self.frame = Frame(master, bg=COLOR_BG)
+        self.setup_ui()
 
-    def create_ui(self):
-        lab1 = Label(self.frame, text="Orders Management", font=("Arial", 16))
-        lab1.pack(pady=10)
+    def setup_ui(self):
+        # --- Navigation Header ---
+        header = Frame(self.frame, bg=COLOR_PRIMARY, height=60)
+        header.pack(side=TOP, fill=X)
+        
+        Label(header, text="PRO Bookstore POS", font=("Segoe UI", 18, "bold"), 
+              fg="white", bg=COLOR_PRIMARY).pack(side=LEFT, padx=20, pady=10)
+        
+        Button(header, text="Logout to Home", command=self.back_to_home, 
+               bg=COLOR_DANGER, fg="white", font=("Segoe UI", 10, "bold"), 
+               bd=0, padx=15, cursor="hand2").pack(side=RIGHT, padx=20)
 
-        btn_home = Button(
-            self.frame, text="Back to Home", command=self.back_to_home, bg="gray"
-        )
-        btn_home.pack(pady=10)
+        # --- Main Tabs (Notebook) ---
+        self.tabs = ttk.Notebook(self.frame)
+        self.tabs.pack(fill=BOTH, expand=True, padx=10, pady=10)
 
-        form_frame = Frame(self.frame)
-        form_frame.pack(pady=10)
+        # TAB 1: Checkout
+        self.tab_checkout = Frame(self.tabs, bg=COLOR_BG)
+        self.tabs.add(self.tab_checkout, text="  New Transaction  ")
+        self.build_checkout_tab()
 
-        lab2 = Label(form_frame, text="Buyer's Email").grid(
-            row=1, column=0, padx=5, pady=5
-        )
-        self.email_entry = Entry(form_frame)
-        self.email_entry.grid(row=1, column=1, padx=5, pady=5)
+        # TAB 2: History
+        self.tab_history = Frame(self.tabs, bg=COLOR_BG)
+        self.tabs.add(self.tab_history, text="  Bill History  ")
+        self.build_history_tab()
 
-        lab3 = Label(form_frame, text="Quantity").grid(row=2, column=0, padx=5, pady=5)
-        self.quantity_entry = Spinbox(
-            form_frame,
-            from_=1,
-            to=100,
-            increment=1,
-            width=10,
-        )
-        self.quantity_entry.grid(row=2, column=1, padx=5, pady=5)
+    def build_checkout_tab(self):
+        # Container for Checkout
+        container = Frame(self.tab_checkout, bg=COLOR_BG)
+        container.pack(fill=BOTH, expand=True, padx=10, pady=10)
 
-        btn1 = Button(
-            form_frame, text="Add To Cart", command=self.add_to_cart, bg="gray"
-        )
-        btn1.grid(row=3, column=0, pady=10)
+        # LEFT: Inventory Browser
+        left_side = LabelFrame(container, text=" Inventory ", bg="white", padx=10, pady=10)
+        left_side.pack(side=LEFT, fill=BOTH, expand=True)
 
-        btn2 = Button(
-            form_frame, text="Remove To Cart", command=self.remove_from_cart, bg="gray"
-        )
-        btn2.grid(row=3, column=1, pady=10)
+        # Search Bar
+        search_frame = Frame(left_side, bg="white")
+        search_frame.pack(fill=X, pady=(0, 10))
+        Label(search_frame, text="Search:", bg="white").pack(side=LEFT)
+        self.search_entry = Entry(search_frame)
+        self.search_entry.pack(side=LEFT, fill=X, expand=True, padx=5)
+        self.search_entry.bind("<KeyRelease>", self.filter_inventory)
 
-        btn3 = Button(form_frame, text="Clear cart", command=self.clear_cart, bg="gray")
-        btn3.grid(row=3, column=2, pady=10, padx=10)
+        # Inventory Table
+        self.inv_tree = ttk.Treeview(left_side, columns=("id", "title", "price", "stock"), show="headings")
+        for col in [("id", "ID", 40), ("title", "Title", 150), ("price", "Price", 70), ("stock", "Stock", 60)]:
+            self.inv_tree.heading(col[0], text=col[1])
+            self.inv_tree.column(col[0], width=col[2])
+        self.inv_tree.pack(fill=BOTH, expand=True)
+        self.inv_tree.bind("<<TreeviewSelect>>", self.on_inventory_click)
 
-        btn4 = Button(form_frame, text="Git Bill", command=self.git_bill, bg="gray")
-        btn4.grid(row=3, column=3, pady=10)
+        # RIGHT: Cart & Controls
+        right_side = Frame(container, bg=COLOR_BG, width=350)
+        right_side.pack(side=LEFT, fill=Y, padx=(10, 0))
 
-        # --------------------------------------------------
-        # TODO: Implement output bill functionality
+        # Item Config
+        config_frame = LabelFrame(right_side, text=" Selection ", bg="white", padx=10, pady=10)
+        config_frame.pack(fill=X)
 
-        # --------------------------------------
+        Label(config_frame, text="ID:", bg="white").grid(row=0, column=0, sticky=W)
+        self.id_var = StringVar()
+        Entry(config_frame, textvariable=self.id_var, state="readonly").grid(row=0, column=1, sticky=EW, padx=5)
 
-        # -------------------Books Table-------------------
-        self.books_tree = ttk.Treeview(
-            self.frame,
-            columns=("book_id", "title", "author", "price", "quantity"),
-            show="headings",
-            height=5,
-        )
-        self.books_tree.heading("book_id", text="Book ID")
-        self.books_tree.heading("title", text="Title")
-        self.books_tree.heading("author", text="Author")
-        self.books_tree.heading("price", text="Price")
-        self.books_tree.heading("quantity", text="Quantity")
-        self.books_tree.pack(pady=10)
-        self.books_tree.pack(pady=10)
-        self.load_books()
+        Label(config_frame, text="Qty:", bg="white").grid(row=1, column=0, sticky=W, pady=5)
+        self.qty_entry = Entry(config_frame)
+        self.qty_entry.insert(0, "1")
+        self.qty_entry.grid(row=1, column=1, sticky=EW, padx=5)
 
-        # -------------------Orders Table-------------------
-        self.tree = ttk.Treeview(
-            self.frame,
-            columns=("book_id", "title", "author", "price", "quantity"),
-            show="headings",
-            height=5,
-        )
+        Button(config_frame, text="Add to Cart", bg=COLOR_ACCENT, fg="white", 
+               command=self.add_item, font=("Segoe UI", 9, "bold")).grid(row=2, column=0, columnspan=2, sticky=EW, pady=5)
 
-        self.tree.heading("book_id", text="Book ID")
-        self.tree.heading("title", text="Title")
-        self.tree.heading("author", text="Author")
-        self.tree.heading("price", text="Price")
-        self.tree.heading("quantity", text="Quantity")
+        # Cart Table
+        cart_frame = LabelFrame(right_side, text=" Your Cart ", bg="white", padx=10, pady=10)
+        cart_frame.pack(fill=BOTH, expand=True, pady=10)
 
-        self.tree.pack(pady=10)
-        self.load_orders()
+        self.cart_tree = ttk.Treeview(cart_frame, columns=("id", "title", "qty", "total"), show="headings", displaycolumns=("title", "qty", "total"))
+        self.cart_tree.heading("title", text="Item")
+        self.cart_tree.heading("qty", text="Qty")
+        self.cart_tree.heading("total", text="Total")
+        self.cart_tree.column("qty", width=40)
+        self.cart_tree.column("total", width=70)
+        self.cart_tree.pack(fill=BOTH, expand=True)
 
-        self.show_bill_frame = Frame(self.frame)
-        self.show_bill_frame.pack(pady=10)
+        Button(cart_frame, text="Remove Selected", command=self.remove_item, 
+               bg=COLOR_DANGER, fg="white", font=("Segoe UI", 8)).pack(fill=X, pady=5)
 
-        # make the text start at the top of the text widget
+        # Finalize
+        checkout_box = Frame(right_side, bg="white", padx=10, pady=10, highlightbackground="#ddd", highlightthickness=1)
+        checkout_box.pack(fill=X)
 
-        self.show_bill_canvas = Canvas(self.show_bill_frame, width=800, height=200)
-        self.show_bill_canvas.pack(side=LEFT)
+        Label(checkout_box, text="Customer Email:", bg="white").pack(anchor=W)
+        self.email_entry = Entry(checkout_box)
+        self.email_entry.pack(fill=X, pady=5)
 
-        self.show_bill_scrollbar = Scrollbar(
-            self.show_bill_frame, orient=VERTICAL, command=self.show_bill_canvas.yview
-        )
-        self.show_bill_scrollbar.pack(side=RIGHT, fill=Y)
+        Button(checkout_box, text="FINALIZE SALE", bg=COLOR_SUCCESS, fg="white", 
+               font=("Segoe UI", 12, "bold"), command=self.complete_sale).pack(fill=X)
 
-        self.show_bill_canvas.configure(yscrollcommand=self.show_bill_scrollbar.set)
-        self.show_bill_canvas.bind(
-            "<Configure>",
-            lambda e: self.show_bill_canvas.configure(
-                scrollregion=self.show_bill_canvas.bbox("all")
-            ),
-        )
+    def build_history_tab(self):
+        """Creates a view for past bills."""
+        frame = Frame(self.tab_history, bg="white", padx=20, pady=20)
+        frame.pack(fill=BOTH, expand=True)
+        
+        Label(frame, text="Recent Transactions", font=("Segoe UI", 14, "bold"), bg="white").pack(anchor=W)
+        
+        self.history_tree = ttk.Treeview(frame, columns=("id", "user", "email", "total", "date"), show="headings")
+        self.history_tree.heading("id", text="Bill #")
+        self.history_tree.heading("user", text="Customer ID")
+        self.history_tree.heading("email", text="Email")
+        self.history_tree.heading("total", text="Total Paid")
+        self.history_tree.heading("date", text="Date")
+        self.history_tree.pack(fill=BOTH, expand=True, pady=10)
+        
+        Button(frame, text="Refresh History", command=self.load_history).pack(side=RIGHT)
 
-        self.show_bill_inner_frame = Frame(self.show_bill_canvas)
-        self.show_bill_canvas.create_window(
-            (0, 0), window=self.show_bill_inner_frame, anchor="nw"
-        )
+    # --- LOGIC METHODS ---
 
-        self.show_bill = Label(
-            self.show_bill_inner_frame,
-            width=100,
-            height=100,
-            bg="#E5E5E5",
-            fg="#252525",
-        )
-        self.show_bill.pack()
-        self.show_bill.pack(pady=10)
+    def load_inventory(self, search_text=""):
+        for item in self.inv_tree.get_children(): self.inv_tree.delete(item)
+        
+        books = manage_book_conection.get_all_books()
+        for b in books:
+            if search_text.lower() in b.get_title().lower():
+                self.inv_tree.insert("", "end", values=(
+                    b.get_book_id(), b.get_title(), f"${b.get_price():.2f}", b.get_quantity()
+                ))
 
-    def git_bill(self):
+    def on_inventory_click(self, event):
+        selected = self.inv_tree.selection()
+        if selected:
+            data = self.inv_tree.item(selected[0])["values"]
+            self.id_var.set(data[0])
+
+    def filter_inventory(self, event):
+        self.load_inventory(self.search_entry.get())
+
+    def add_item(self):
+        try:
+            bid = int(self.id_var.get())
+            qty = int(self.qty_entry.get())
+            self.order_logic.add_book(bid, qty)
+            self.update_cart_ui()
+        except:
+            messagebox.showerror("Error", "Select a book and enter a valid quantity.")
+
+    def remove_item(self):
+        selected = self.cart_tree.selection()
+        if not selected: return
+        item = self.cart_tree.item(selected[0])["values"]
+        book_id = item[0]
+        qty = item[2]
+        self.order_logic.remove_book(book_id, qty)
+        self.update_cart_ui()
+
+    def update_cart_ui(self):
+        for item in self.cart_tree.get_children(): self.cart_tree.delete(item)
+        books = self.order_logic.get_ordered_books()
+        for b in books:
+            qty = self.order_logic.books[b.get_book_id()]
+            self.cart_tree.insert("", "end", values=(b.get_book_id(), b.get_title(), qty, f"${b.get_price()*qty:.2f}"))
+
+    def complete_sale(self):
         email = self.email_entry.get()
-        if email and re.match(r"[a-z0-9]+@[a-z]+\.[a-z]{2,3}", email):
-            if len(self.orders):
-                if self.manage_users.user_exists(email):
-                    bills = dict()
-                    for item in self.orders:
-                        # print (item)
-                        bills[item.get_book_id()] = 0
+        if not email or "@" not in email:
+            messagebox.showwarning("Input", "Enter a valid email.")
+            return
 
-                    for item in self.orders:
-                        # print (item)
-                        bills[item.get_book_id()] += item.get_quantity()
-                    print(bills)
-                    # self.manage_bills.add_bill(bills, email)
-                    # show_bills = self.manage_bills.create_bill(bills)
-                    show_bills = self.manage_orders.create_bill()
-                    self.manage_orders.complete_purchase(email)
-                    self.show_bill["text"] = show_bills
-                    print(show_bills)
+        if not manage_user_conection.user_exists(email):
+            messagebox.showerror("Error", "User email not found in database.")
+            return
 
-                    self.reset_order_table()
-                else:
-                    messagebox.showerror("ERROR", "User Not Found")
-            else:
-                messagebox.showerror("ERROR", "No Book Selected")
+        if self.order_logic.complete_purchase(email):
+            bill_text = self.order_logic.create_bill()
+            messagebox.showinfo("BILL GENERATED", bill_text)
+            self.order_logic.books.clear() # Clear for next order
+            self.update_cart_ui()
+            self.load_inventory() # Update stock levels in UI
+            
+            # Clear fields
+            self.id_var.set("")
+            self.qty_entry.delete(0, END)
+            self.qty_entry.insert(0, "1")
+            self.email_entry.delete(0, END)
         else:
-            messagebox.showerror("ERROR", "Invalid Email")
+            messagebox.showerror("Failed", "Transaction failed. Check stock levels.")
 
-    def add_to_cart(self):
-        selected_item = self.books_tree.selection()
-        if selected_item:
-            item = self.books_tree.item(selected_item)
-            book_id = item["values"][0]
-            book = self.manage_books.get_book(book_id)
-            quantity = int(self.quantity_entry.get())
+    def load_history(self):
+        """Fetches data directly from Bills table for the history tab."""
+        for item in self.history_tree.get_children(): self.history_tree.delete(item)
+        query = "SELECT Bills.bill_id, Bills.user_id, Users.email, Bills.total, Bills.date_time FROM Bills JOIN Users ON Bills.user_id = Users.user_id"
+        results = main_database_conection.free_execute(query)
+        for row in results:
+            self.history_tree.insert("", "end", values=(row["bill_id"], row["user_id"], row["email"], f"${row['total']:.2f}", row["date_time"]))
 
-            if quantity <= book.get_quantity():
-                # book.set_quantity(book.get_quantity() - quantity)
-                # self.manage_books.update_book(book)
-                book.set_quantity(quantity)
-
-                self.manage_orders.add_book(book_id, quantity)
-                # self.orders.append(book)
-                self.orders = self.manage_orders.get_ordered_books()
-
-                self.load_books()
-                self.load_orders()
-            else:
-                messagebox.showerror("Error", "the book is limited")
-        else:
-            messagebox.showerror("Error", "Select a book")
-
-    def remove_from_cart(self):
-        selected_item = self.tree.selection()
-        if selected_item:
-            item = self.tree.item(selected_item)
-            book_id = item["values"][0]
-            book = self.manage_books.get_book(book_id)
-            quantity = int(self.quantity_entry.get())
-
-            for item in self.orders:
-                if item.get_book_id() == book_id:
-                    self.orders.remove(item)
-
-            book.set_quantity(book.get_quantity() + quantity)
-            self.manage_books.update_book(book)
-
-            self.load_books()
-            self.load_orders()
-        else:
-            messagebox.showerror("Error", "Select a book")
-
-    def clear_cart(self):
-        quantity = self.quantity_entry.get()
-
-        for item in self.orders:
-            book_id = item.get_book_id()
-            book = self.manage_books.get_book(book_id)
-            book.set_quantity(book.get_quantity() + item.get_quantity())
-            self.manage_books.update_book(book)
-
-        self.orders.clear()
-        self.load_books()
-        self.load_orders()
-
-    def load_books(self):
-        self.reset_book_table()
-        self.books = self.manage_books.get_all_books()
-        # print(self.books)
-        for row in self.books:
-            self.books_tree.insert(
-                "",
-                END,
-                values=(
-                    row.get_book_id(),
-                    row.get_title(),
-                    row.get_author(),
-                    row.get_price(),
-                    row.get_quantity(),
-                ),
-            )
-
-    def reset_book_table(self):
-        for item in self.books_tree.get_children():
-            self.books_tree.delete(item)
-
-    def load_orders(self):
-        self.reset_order_table()
-        for row in self.orders:
-            self.tree.insert(
-                "",
-                END,
-                values=(
-                    row.get_book_id(),
-                    row.get_title(),
-                    row.get_author(),
-                    row.get_price(),
-                    row.get_quantity(),
-                ),
-            )
-        # self.books = self.manage_books.get_all_books()
-        # # print(self.books)
-
-        # for row in self.books:
-        #     self.tree.insert("", END, values=(row.get_book_id(),
-        #                                       row.get_title(),
-        #                                       row.get_author(),
-        #                                       row.get_price(),
-        #                                       row.get_quantity()))
-
-    def reset_order_table(self):
-        for item in self.tree.get_children():
-            self.tree.delete(item)
-
-    # def add_order(self):
-    #     book_id = self.book_id_entry.get()
-    #     user_id = self.user_id_entry.get()
-    #     quantity = self.quantity_entry.get()
-
-    #     if book_id and user_id and quantity:
-    #         self.orders.append((book_id, user_id, quantity))
-    #         messagebox.showinfo("Success", "Order added successfully")
-    #         self.load_orders()
-    #     else:
-    #         messagebox.showerror("Error", "All fields are required")
-
+    # --- WINDOW MANAGEMENT ---
     def display(self):
         self.frame.pack(fill=BOTH, expand=True)
+        self.load_inventory()
+        self.load_history()
 
     def hide(self):
         self.frame.pack_forget()
 
     def back_to_home(self):
-        self.clear_cart()
         self.hide()
         self.show_home()
