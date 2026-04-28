@@ -7,14 +7,31 @@ class ManageBook:
         self.db = db
 
     def add_book(self, book: Book):
-        # Add a book to the Database
-        self.db.free_execute(
-            "INSERT INTO Books (title, author, price, quantity) VALUES (?, ?, ?, ?)",
+        # Check if the book already exists by title and author
+        existing_books = self.db.free_execute(
+            "SELECT * FROM Books WHERE title = ? AND author = ?",
             book.get_title(),
-            book.get_author(),
-            book.get_price(),
-            book.get_quantity(),
+            book.get_author()
         )
+        
+        if existing_books:
+            existing_book = self.convert_data_to_book(existing_books[0])
+            new_quantity = int(existing_book.get_quantity()) + int(book.get_quantity())
+            self.db.free_execute(
+                "UPDATE Books SET quantity = ?, price = ? WHERE book_id = ?",
+                new_quantity,
+                book.get_price(),
+                existing_book.get_book_id()
+            )
+        else:
+            # Add a new book to the Database
+            self.db.free_execute(
+                "INSERT INTO Books (title, author, price, quantity) VALUES (?, ?, ?, ?)",
+                book.get_title(),
+                book.get_author(),
+                book.get_price(),
+                book.get_quantity(),
+            )
         self.db.commit()
 
     def remove_book(self, book_id: int):
