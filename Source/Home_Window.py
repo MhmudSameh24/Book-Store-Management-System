@@ -1,17 +1,31 @@
 from tkinter import *
+import json
+import os
 from Validation import Validation
 from tkinter import ttk, messagebox
 from Mange_Book_Window import ManageBooks
 from Manage_Users_Window import ManageUsers
 from Manage_Orders_Window import ManageOrders
 from Report_Window import ReportWindow
-from Settings_Window import SettingsWindow
+from Inventory_Alerts_Window import InventoryAlertsWindow
 
 
 class BookstoreApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("Bookstore Management System")
+        
+        self.store_name = "Bookstore Management System"
+        if os.path.exists("config.json"):
+            try:
+                with open("config.json", "r") as f:
+                    data = json.load(f)
+                    name = data.get("name", "").strip()
+                    if name:
+                        self.store_name = name
+            except:
+                pass
+
+        self.root.title(self.store_name)
         self.root.geometry("800x500")
         # icon = PhotoImage(file="Icon.png")
         # self.root.iconphoto(False, icon)
@@ -31,7 +45,7 @@ class BookstoreApp:
 
         lab1 = Label(
             self.home_frame,
-            text="Bookstore Management System",
+            text=self.store_name,
             font=("Arial", 35),
             fg="#2c3e50",
         )
@@ -91,8 +105,8 @@ class BookstoreApp:
 
         btn5 = Button(
             self.home_frame,
-            text="Settings",
-            command=self.open_settings,
+            text="Low Stock Alerts",
+            command=self.open_inventory_alerts,
             width=35,
             height=2,
             bg="#3498db",
@@ -124,10 +138,10 @@ class BookstoreApp:
         self.report_window = ReportWindow(self.root, self.show_home)
         self.report_window.display()
 
-    def open_settings(self):
+    def open_inventory_alerts(self):
         self.home_frame.pack_forget()
-        self.settings_window = SettingsWindow(self.root, self.show_home)
-        self.settings_window.display()
+        self.inventory_alerts_window = InventoryAlertsWindow(self.root, self.show_home)
+        self.inventory_alerts_window.display()
 
     def show_home(self):
         if hasattr(self, "manage_books"):
@@ -138,8 +152,8 @@ class BookstoreApp:
             self.manage_orders.hide()
         if hasattr(self, "report_window"):
             self.report_window.hide()
-        if hasattr(self, "settings_window"):
-            self.settings_window.hide()
+        if hasattr(self, "inventory_alerts_window"):
+            self.inventory_alerts_window.hide()
 
         self.home_frame.pack(fill=BOTH, expand=True)
 
