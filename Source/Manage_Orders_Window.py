@@ -243,3 +243,13 @@ class ManageOrders:
     def back_to_home(self):
         self.hide()
         self.show_home()
+
+
+# to do run this window independently for testing:
+if __name__ == "__main__":
+    root = Tk()
+    root.title("Manage Orders - PRO Bookstore POS")
+    root.geometry("900x600")
+    manage_orders_window = ManageOrders(root, lambda: None)
+    manage_orders_window.display()
+    root.mainloop()

@@ -339,3 +339,14 @@ class ManageBooks:
 
     def hide(self):
         self.frame.pack_forget()
+
+        # to do run this window independently for testing:
+
+
+if __name__ == "__main__":
+    root = Tk()
+    root.title("Manage Books - PRO Bookstore POS")
+    root.geometry("900x600")
+    manage_books_window = ManageBooks(root, lambda: None)
+    manage_books_window.display()
+    root.mainloop()

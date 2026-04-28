@@ -81,3 +81,12 @@ class InventoryAlertsWindow:
     def back_to_home(self):
         self.hide()
         self.show_home()
+
+# to do run this window independently for testing:
+if __name__ == "__main__":
+    root = Tk()
+    root.title("Low Stock Alerts - PRO Bookstore POS")
+    root.geometry("800x500")
+    inventory_alerts_window = InventoryAlertsWindow(root, lambda: None)
+    inventory_alerts_window.display()
+    root.mainloop()
