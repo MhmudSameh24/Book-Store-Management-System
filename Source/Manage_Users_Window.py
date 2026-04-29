@@ -130,8 +130,8 @@ class ManageUsers:
             state = self.add_record(email)
             if state:
                 messagebox.showinfo("Success", "User added successfully")
-                added_user = self.manage_user.get_user_by_email(email)
-                self.add_to_view((added_user.get_id(), added_user.get_email()))
+                self.tree.delete(*self.tree.get_children())
+                self.load_records()
             else:
                 messagebox.showerror("Error", "User already exists")
         else:
@@ -145,7 +145,8 @@ class ManageUsers:
                 messagebox.showerror("Error", "No valid user selected.")
                 return
             self.delete_record(int(id))
-            self.tree.delete(selected)
+            self.tree.delete(*self.tree.get_children())
+            self.load_records()
             messagebox.showinfo("Success", "User deleted successfully")
         else:
             messagebox.showerror("Error", "User not found")

@@ -154,16 +154,23 @@ class ManageOrders:
         for item in self.inv_tree.get_children(): self.inv_tree.delete(item)
         
         books = manage_book_conection.get_all_books()
+        
+        found_any = False
         for b in books:
             if search_text.lower() in b.get_title().lower():
                 self.inv_tree.insert("", "end", values=(
                     b.get_book_id(), b.get_title(), f"${b.get_price():.2f}", b.get_quantity()
                 ))
+                found_any = True
+                
+        if not found_any:
+            self.inv_tree.insert("", "end", values=("-", "No books available", "-", "-"))
 
     def on_inventory_click(self, event):
         selected = self.inv_tree.selection()
         if selected:
             data = self.inv_tree.item(selected[0])["values"]
+            if str(data[0]) == "-": return
             self.id_var.set(data[0])
 
     def filter_inventory(self, event):

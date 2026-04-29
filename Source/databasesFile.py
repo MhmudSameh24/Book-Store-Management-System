@@ -1,8 +1,8 @@
-
+import os
 from database_utility import SQLite
 
-
-main_database_path = "bookstore.db"
+base_dir = os.path.dirname(os.path.abspath(__file__))
+main_database_path = os.path.join(base_dir, "bookstore.db")
 main_database_conection = SQLite(main_database_path)
 main_database_conection.open()
 
