@@ -117,7 +117,7 @@ class ManageOrders:
         self.cart_tree.column("total", width=70)
         self.cart_tree.pack(fill=BOTH, expand=True)
 
-        Button(cart_frame, text="Remove Selected", command=self.remove_item, 
+        Button(cart_frame, text="Remove Selected", command=self.remove_from_cart, 
                bg=COLOR_DANGER, fg="white", font=("Segoe UI", 8)).pack(fill=X, pady=5)
 
         # Finalize
