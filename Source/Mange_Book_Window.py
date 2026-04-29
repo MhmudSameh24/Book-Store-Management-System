@@ -248,6 +248,9 @@ class ManageBooks:
             item = self.tree.item(selected_item)
             print(item)
             book_id = item["values"][0]
+            if str(book_id) == "-":
+                messagebox.showerror("Error", "No valid book selected.")
+                return
             print(book_id)
             title = self.title_entry.get()
             author = self.author_entry.get()
@@ -276,6 +279,9 @@ class ManageBooks:
             self.reset_form()
             item = self.tree.item(selected_item)
             book_id = item["values"][0]
+            if str(book_id) == "-":
+                messagebox.showerror("Error", "No valid book selected.")
+                return
             self.manage_books.remove_book(book_id)
             self.load_books()
             messagebox.showinfo("Success", "Book Deleted successfully")

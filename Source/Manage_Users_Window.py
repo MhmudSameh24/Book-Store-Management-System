@@ -141,6 +141,9 @@ class ManageUsers:
         selected = self.tree.selection()
         if selected:
             id = self.tree.item(selected)["values"][0]
+            if str(id) == "-":
+                messagebox.showerror("Error", "No valid user selected.")
+                return
             self.delete_record(int(id))
             self.tree.delete(selected)
             messagebox.showinfo("Success", "User deleted successfully")
@@ -150,6 +153,10 @@ class ManageUsers:
     def update_user(self):
         selected = self.tree.selection()
         if selected:
+            id = self.tree.item(selected)["values"][0]
+            if str(id) == "-":
+                messagebox.showerror("Error", "No valid user selected.")
+                return
             new_email = self.email_entry.get()
             if len(new_email) and self.validate_email(new_email):
                 updated_user = User()
