@@ -198,27 +198,25 @@ class ManageBooks:
         self.load_books()
 
     def load_books(self):
-        # self.books = [
-        #     (1, "Book A", "Author A", 15.5, 10),
-        #     (2, "Book B", "Author B", 20.0, 5),
-        # ]
         self.reset_table()
 
         self.books = self.manage_books.get_all_books()
-        # print(self.books)
 
-        for row in self.books:
-            self.tree.insert(
-                "",
-                END,
-                values=(
-                    row.get_book_id(),
-                    row.get_title(),
-                    row.get_author(),
-                    row.get_price(),
-                    row.get_quantity(),
-                ),
-            )
+        if self.books:
+            for row in self.books:
+                self.tree.insert(
+                    "",
+                    END,
+                    values=(
+                        row.get_book_id(),
+                        row.get_title(),
+                        row.get_author(),
+                        row.get_price(),
+                        row.get_quantity(),
+                    ),
+                )
+        else:
+            self.tree.insert("", "end", values=("-", "No books available", "-", "-", "-"))
 
     def add_book(self):
         title = self.title_entry.get()
@@ -290,20 +288,22 @@ class ManageBooks:
             self.reset_table()
 
             self.books = self.manage_books.search_book(search)
-            print(self.books)
 
-            for row in self.books:
-                self.tree.insert(
-                    "",
-                    END,
-                    values=(
-                        row.get_book_id(),
-                        row.get_title(),
-                        row.get_author(),
-                        row.get_price(),
-                        row.get_quantity(),
-                    ),
-                )
+            if self.books:
+                for row in self.books:
+                    self.tree.insert(
+                        "",
+                        END,
+                        values=(
+                            row.get_book_id(),
+                            row.get_title(),
+                            row.get_author(),
+                            row.get_price(),
+                            row.get_quantity(),
+                        ),
+                    )
+            else:
+                self.tree.insert("", "end", values=("-", "No matching books found", "-", "-", "-"))
 
     def delete_results(self):
         self.load_books()
@@ -323,8 +323,10 @@ class ManageBooks:
         # Get the selected item
         selected_item = self.tree.selection()  # Get the focused item
         if selected_item:
-            self.reset_form()
             item_data = self.tree.item(selected_item)
+            if str(item_data["values"][0]) == "-": return
+            
+            self.reset_form()
             print(item_data["values"])
             self.title_entry.insert(0, item_data["values"][1])
             self.author_entry.insert(0, item_data["values"][2])

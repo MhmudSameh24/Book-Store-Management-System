@@ -178,10 +178,11 @@ class ManageOrders:
         except:
             messagebox.showerror("Error", "Select a book and enter a valid quantity.")
 
-    def remove_item(self):
+    def remove_from_cart(self):
         selected = self.cart_tree.selection()
         if not selected: return
         item = self.cart_tree.item(selected[0])["values"]
+        if str(item[0]) == "-": return
         book_id = item[0]
         qty = item[2]
         self.order_logic.remove_book(book_id, qty)
@@ -190,9 +191,12 @@ class ManageOrders:
     def update_cart_ui(self):
         for item in self.cart_tree.get_children(): self.cart_tree.delete(item)
         books = self.order_logic.get_ordered_books()
-        for b in books:
-            qty = self.order_logic.books[b.get_book_id()]
-            self.cart_tree.insert("", "end", values=(b.get_book_id(), b.get_title(), qty, f"${b.get_price()*qty:.2f}"))
+        if books:
+            for b in books:
+                qty = self.order_logic.books[b.get_book_id()]
+                self.cart_tree.insert("", "end", values=(b.get_book_id(), b.get_title(), qty, f"${b.get_price()*qty:.2f}"))
+        else:
+            self.cart_tree.insert("", "end", values=("-", "Cart is empty", "-", "-"))
 
     def complete_sale(self):
         if not self.order_logic.books:
@@ -224,12 +228,21 @@ class ManageOrders:
             messagebox.showerror("Failed", "Transaction failed. Check stock levels.")
 
     def load_history(self):
-        """Fetches data directly from Bills table for the history tab."""
-        for item in self.history_tree.get_children(): self.history_tree.delete(item)
-        query = "SELECT Bills.bill_id, Bills.user_id, Users.email, Bills.total, Bills.date_time FROM Bills JOIN Users ON Bills.user_id = Users.user_id"
-        results = main_database_conection.free_execute(query)
-        for row in results:
-            self.history_tree.insert("", "end", values=(row["bill_id"], row["user_id"], row["email"], f"${row['total']:.2f}", row["date_time"]))
+        for item in self.history_tree.get_children():
+            self.history_tree.delete(item)
+            
+        bills = main_database_conection.free_execute('''
+            SELECT b.bill_id, u.email, b.total, b.date_time, b.user_id
+            FROM Bills b
+            JOIN Users u ON b.user_id = u.user_id
+            ORDER BY b.bill_id DESC
+        ''')
+        
+        if bills:
+            for b in bills:
+                self.history_tree.insert("", "end", values=(b["bill_id"], b["user_id"], b["email"], f"${float(b['total']):.2f}", b["date_time"]))
+        else:
+            self.history_tree.insert("", "end", values=("-", "-", "No history available", "-", "-"))
 
     # --- WINDOW MANAGEMENT ---
     def display(self):

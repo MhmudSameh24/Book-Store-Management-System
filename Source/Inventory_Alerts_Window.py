@@ -61,15 +61,18 @@ class InventoryAlertsWindow:
             
         books = main_database_conection.free_execute("SELECT book_id, title, author, price, quantity FROM Books WHERE quantity <= 10 ORDER BY quantity ASC")
         
-        for book in books:
-            tags = ('danger',) if book['quantity'] == 0 else ()
-            self.tree.insert("", "end", values=(
-                book['book_id'], 
-                book['title'], 
-                book['author'], 
-                f"${book['price']:.2f}", 
-                book['quantity']
-            ), tags=tags)
+        if books:
+            for book in books:
+                tags = ('danger',) if book['quantity'] == 0 else ()
+                self.tree.insert("", "end", values=(
+                    book['book_id'], 
+                    book['title'], 
+                    book['author'], 
+                    f"${book['price']:.2f}", 
+                    book['quantity']
+                ), tags=tags)
+        else:
+            self.tree.insert("", "end", values=("-", "All stock levels are healthy!", "-", "-", "-"))
 
     def display(self):
         self.frame.pack(fill=BOTH, expand=True)

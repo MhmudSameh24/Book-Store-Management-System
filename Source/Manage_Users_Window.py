@@ -114,6 +114,7 @@ class ManageUsers:
         if selection:
             item = self.tree.item(selection)
             values = item["values"]
+            if str(values[0]) == "-": return
             self.email_entry.delete(0, END)
             self.email_entry.insert(0, values[1])
 
@@ -197,8 +198,11 @@ class ManageUsers:
         if len(search_text):
             self.tree.delete(*self.tree.get_children())
             records = self.manage_user.search(search_text)
-            for record in records:
-                self.add_to_view((record.get_id(), record.get_email()))
+            if records:
+                for record in records:
+                    self.add_to_view((record.get_id(), record.get_email()))
+            else:
+                self.tree.insert("", "end", values=("-", "No matching users found"))
         else:
             messagebox.showerror("Error", "Please enter a search text")
 
@@ -212,8 +216,11 @@ class ManageUsers:
 
     def load_records(self):
         records = self.manage_user.load_all_users()
-        for record in records:
-            self.add_to_view((record.get_id(), record.get_email()))
+        if records:
+            for record in records:
+                self.add_to_view((record.get_id(), record.get_email()))
+        else:
+            self.tree.insert("", "end", values=("-", "No users available"))
 
 
 if __name__ == "__main__":

@@ -133,6 +133,8 @@ class ReportWindow:
         if recent:
             for r in recent:
                 self.tree.insert("", "end", values=(r["bill_id"], r["email"], f"${float(r['total']):.2f}"))
+        else:
+            self.tree.insert("", "end", values=("-", "No recent transactions", "-"))
 
     def display(self):
         self.frame.pack(fill=BOTH, expand=True)
